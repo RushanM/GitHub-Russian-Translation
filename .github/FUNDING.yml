@@ -1,0 +1,15 @@
+# These are supported funding model platforms
+
+github: # up to 4 GitHub Sponsors-enabled usernames e.g., [user1, user2]
+patreon: # single Patreon username
+open_collective: # single Open Collective username
+ko_fi: # single Ko-fi username
+tidelift: # single Tidelift platform-name/package-name e.g., npm/babel
+community_bridge: # single Community Bridge project-name e.g., cloud-foundry
+liberapay: # single Liberapay username
+issuehunt: # single IssueHunt username
+lfx_crowdfunding: # single LFX Crowdfunding project-name e.g., cloud-foundry
+polar: # single Polar username
+buy_me_a_coffee: # single Buy Me a Coffee username
+thanks_dev: # single thanks.dev username
+custom: ['https://boosty.to/rushanm', 'https://vk.me/moneysend/deflecta', 'https://www.donationalerts.com/r/deflecta', 'https://yoomoney.ru/to/410015215253910']
