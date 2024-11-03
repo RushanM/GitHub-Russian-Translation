@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B1
+// @version         1-B2
 // ==/UserScript==
 
 (function() {
@@ -53,7 +53,7 @@
         "Developer settings": "Настройки разработчика",
         "Code security": "Безопасность кода",
         "Moderation": "Модерация",
-        // Заголовки
+        // Заголовки настроек
         "Access": "Доступ",
         "Code, planning, and automation": "Код, планирование и автоматизация",
         "Security": "Безопасность",
@@ -62,7 +62,7 @@
         // Вкладки
         "Code": "Код",
         "Pull requests": "Запросы на слияние",
-        "Issues": "Проблемы, предложения и вопросы",
+        "Issues": "Темы",
         "Discussions": "Обсуждения",
         "Actions": "Экшены",
         "Projects": "Проекты",
@@ -70,7 +70,40 @@
         "Security": "Безопасность",
         "Insights": "Аналитика",
         "Settings": "Настройки",
-        "Releases": "Выпуски"
+        "Releases": "Выпуски",
+        // Бутербродное меню репозитория
+        "Compare": "Сравнение",
+        "Dependencies": "Зависимости",
+        "Commits": "Правки",
+        "Branches": "Ветки",
+        // Настройки репозитория
+        "General": "Основное",
+        "Collaborators": "Коллабораторы",
+        "Moderation options": "Настройки модерации",
+        "Tags": "Теги",
+        "Rules": "Правила",
+        "Rulesets": "Наборы правил",
+        "Runners": "Исполнители",
+        "Webhooks": "Вебхуки",
+        "Environments": "Среды",
+        "Deploy keys": "Ключи развёртывания",
+        "Secrets and variables": "Секреты и переменные",
+        "GitHub Apps": "Приложения GitHub",
+        "Email notifications": "Уведомления по почте",
+        "Autolink references": "Автоссылки",
+        // Заголовки настроек репозитория
+        "Code and automation": "Код и автоматизация",
+        // Разделы экшенов
+        "All workflows": "Все рабочие процессы",
+        "Caches": "Кэши",
+        "Attestations": "Утверждения",
+        // Разделы экшена
+        "Summary": "Сводка",
+        "Usage": "Использование",
+        "Workflow file": "Файл рабочего процесса",
+        // Заголовки разделов экшена
+        "Jobs": "Задания",
+        "Run details": "Подробности запуска"
     };
 
     function translateTextContent() {
