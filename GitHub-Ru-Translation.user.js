@@ -3,7 +3,7 @@
 // @name:ru         Русификатор GitHub
 // @author          Deflecta
 // @contributionURL https://boosty.to/rushanm
-// @description     Переводит сайт github.com на русский язык.
+// @description     Translates the github.com website into Russian.
 // @description:ru  Переводит сайт github.com на русский язык.
 // @downloadURL     https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
 // @grant           none
