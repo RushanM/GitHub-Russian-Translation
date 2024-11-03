@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B2
+// @version         1-B3
 // ==/UserScript==
 
 (function() {
@@ -103,7 +103,9 @@
         "Workflow file": "Файл рабочего процесса",
         // Заголовки разделов экшена
         "Jobs": "Задания",
-        "Run details": "Подробности запуска"
+        "Run details": "Подробности запуска",
+        // Заголовки разделов экшенов
+        "Management": "Управление"
     };
 
     function translateTextContent() {
@@ -117,22 +119,12 @@
         });
     }
 
-    const debouncedTranslate = (function() {
-        let timeout;
-        return function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(translateTextContent, 100);
-        };
-    })();
+    const observer = new MutationObserver(translateTextContent);
 
-    const observer = new MutationObserver(debouncedTranslate);
-
-    const targetNode = document.querySelector('main') || document.body;
-    observer.observe(targetNode, {
+    // Наблюдаем за всем документом
+    observer.observe(document, {
         childList: true,
-        subtree: true,
-        characterData: false,
-        attributes: false
+        subtree: true
     });
 
     translateTextContent();
