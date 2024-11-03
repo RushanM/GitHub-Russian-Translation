@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B3
+// @version         1-B4
 // ==/UserScript==
 
 (function() {
@@ -105,23 +105,60 @@
         "Jobs": "Задания",
         "Run details": "Подробности запуска",
         // Заголовки разделов экшенов
-        "Management": "Управление"
+        "Management": "Управление",
+        // Заголовки страниц
+        "Dashboard": "Главная",
+        "Copilot": "Копайлот",
+        // Поиск
+        "Type / to search": "Нажмите <kbd class=\"AppHeader-search-kbd\">/</kbd> для поиска",
+        // Разделы главной
+        "Home": "Главная",
+        "Explore": "Обзор",
+        "Marketplace": "Торговая площадка"
     };
 
     function translateTextContent() {
-        const elements = document.querySelectorAll('.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content]');
+        const elements = document.querySelectorAll('.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text');
 
         elements.forEach(el => {
-            const text = el.textContent.trim();
-            if (translations[text]) {
-                el.textContent = translations[text];
+            // Проверка, содержит ли элемент дочерние элементы (<kbd>)
+            if (el.childElementCount > 0) {
+                // Сборка текстового содержания с учётом дочерних элементов
+                let text = '';
+                el.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        text += node.textContent;
+                    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'KBD') {
+                        text += '/' ; // Добавление символа «/», который содержится внутри <kbd>
+                    }
+                });
+                text = text.trim();
+                if (translations[text]) {
+                    // Создание нового фрагмента с переводом и сохранение тега <kbd>
+                    const newFragment = document.createDocumentFragment();
+                    const parts = translations[text].split('<kbd class="AppHeader-search-kbd">/</kbd>');
+                    newFragment.append(document.createTextNode(parts[0]));
+                    const kbd = document.createElement('kbd');
+                    kbd.className = 'AppHeader-search-kbd';
+                    kbd.textContent = '/';
+                    newFragment.append(kbd);
+                    newFragment.append(document.createTextNode(parts[1]));
+                    // Очистка элемента и вставка нового контента
+                    el.innerHTML = '';
+                    el.appendChild(newFragment);
+                }
+            } else {
+                const text = el.textContent.trim();
+                if (translations[text]) {
+                    el.textContent = translations[text];
+                }
             }
         });
     }
 
     const observer = new MutationObserver(translateTextContent);
 
-    // Наблюдаем за всем документом
+    // Наблюдение за всем документом
     observer.observe(document, {
         childList: true,
         subtree: true
