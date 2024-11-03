@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B4
+// @version         1-B5
 // ==/UserScript==
 
 (function() {
@@ -107,18 +107,23 @@
         // Заголовки разделов экшенов
         "Management": "Управление",
         // Заголовки страниц
-        "Dashboard": "Главная",
+        "Dashboard": "Главная страница",
         "Copilot": "Копайлот",
         // Поиск
         "Type / to search": "Нажмите <kbd class=\"AppHeader-search-kbd\">/</kbd> для поиска",
         // Разделы главной
         "Home": "Главная",
         "Explore": "Обзор",
-        "Marketplace": "Торговая площадка"
+        "Marketplace": "Торговая площадка",
+        // Главная
+        "Top repositories": "Лучшие репозитории",
+        "Recent activity": "Недавняя активность",
+        // Подзагаловки главной
+        "Show more": "Показать больше"
     };
 
     function translateTextContent() {
-        const elements = document.querySelectorAll('.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text');
+        const elements = document.querySelectorAll('.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button');
 
         elements.forEach(el => {
             // Проверка, содержит ли элемент дочерние элементы (<kbd>)
