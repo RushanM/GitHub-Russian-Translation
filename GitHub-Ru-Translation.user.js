@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B5
+// @version         1-B6
 // ==/UserScript==
 
 (function() {
@@ -61,8 +61,9 @@
         "Archives": "Архивы",
         // Вкладки
         "Code": "Код",
-        "Pull requests": "Запросы на слияние",
         "Issues": "Темы",
+        "Bugs": "Ошибки",
+        "Pull requests": "Запросы на слияние",
         "Discussions": "Обсуждения",
         "Actions": "Экшены",
         "Projects": "Проекты",
