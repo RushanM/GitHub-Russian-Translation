@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B6
+// @version         1-B7
 // ==/UserScript==
 
 (function() {
@@ -162,13 +162,74 @@
         });
     }
 
-    const observer = new MutationObserver(translateTextContent);
+    function translateCopilotPreview() {
+        // Замена «Ask Copilot»
+        const askCopilotPlaceholder = document.querySelector('.copilotPreview__input[placeholder="Ask Copilot"]');
+        if (askCopilotPlaceholder) {
+            askCopilotPlaceholder.setAttribute('placeholder', 'Спросить Копайлота');
+        }
 
-    // Наблюдение за всем документом
-    observer.observe(document, {
-        childList: true,
-        subtree: true
+        // Всплывающая подсказка «Send»
+        document.querySelectorAll('tool-tip[role="tooltip"]').forEach(tooltip => {
+            if (tooltip.textContent.trim() === 'Send') {
+                tooltip.textContent = 'Отправить';
+            }
+        });
+
+        // Предложения Копайлота
+        document.querySelectorAll('.copilotPreview__suggestionButton div').forEach(div => {
+            const text = div.textContent.trim();
+            if (text === 'What is a hash table in JS?') {
+                div.innerHTML = 'Что такое хэш-таблица в JS?';
+            } else if (text === 'Email validation regex in JS') {
+                div.innerHTML = 'Регулярное выражение для валидации адреса электронной почты в JS';
+            } else if (text === 'Generate an HTML/JS calculator') {
+                div.innerHTML = 'Напиши калькулятор на HTML/JS';
+            } else if (text === 'How can you help?') {
+                div.innerHTML = 'Как ты можешь помочь?';
+            } else if (text === 'What are Python decorators?') {
+                div.innerHTML = 'Что такое декораторы в Python?';
+            } else if (text === 'Latest nodejs/node release') {
+                div.innerHTML = 'Последний выпуск <span class="fgColor-muted">nodejs/node</span>';
+            } else if (text === 'Rails authentication endpoint') {
+                div.innerHTML = 'Точка аутентификации Rails';
+            } else if (text === 'Pull requests in microsoft/vscode') {
+                div.innerHTML = 'Запросы на слияние в <span class="fgColor-muted">microsoft/vscode</span>';
+            } else if (text === 'Find issues assigned to me') {
+                div.innerHTML = 'Найди назначенные на меня issues';
+            } else if (text === 'Create a profile README for me') {
+                div.innerHTML = 'Напиши README мне для профиля';
+            } else if (text === 'Python Panda data analysis') {
+                div.innerHTML = 'Анализ данных с помощью Python и Panda';
+            } else if (text === 'Open issues in facebook/react') {
+                div.innerHTML = 'Открытые issues в <span class="fgColor-muted">facebook/react</span>';
+            } else if (text === 'Recent bugs in primer/react') {
+                div.innerHTML = 'Последние баги в <span class="fgColor-muted">primer/react</span>';
+            } else if (text === 'My open pull requests') {
+                div.innerHTML = 'Открытые мной запросы на слияние';
+            } else if (text === 'Python password endpoint') {
+                div.innerHTML = 'Точка пароля Python';
+            } else if (text === 'Recent commits in <span class="fgColor-muted">torvalds/linux</span>') {
+                div.innerHTML = 'Последние правки в <span class="fgColor-muted">torvalds/linux</span>';
+            } else if (text === 'What can I do here?') {
+                div.innerHTML = 'Чем заняться?';
+            }
+        });
+    }
+
+    const observer = new MutationObserver(() => {
+        translateTextContent();
+        translateCopilotPreview();
     });
 
+    // Наблюдение за всем документом, включая изменения атрибутов
+    observer.observe(document, {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
+
+    // Вызываем после существующего перевода
     translateTextContent();
+    translateCopilotPreview();
 })();
