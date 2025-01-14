@@ -1,21 +1,22 @@
-# Русификатор GitHub
+# Русификатор Гитхаба
 
-Русификатор [GitHub](https://github.com/), реализованный в виде скрипта для [Tampermonkey](https://github.com/Tampermonkey/tampermonkey).
+Русификатор [Гитхаба](https://github.com/), реализованный в виде скрипта для [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/).
 
 ## Установка
 
-1. Установите Tampermonkey;
-2. Откройте ссылку на скрипт c [GitHub](https://github.com/RushanM/GitHub-Russian-Translation/raw/refs/heads/master/GitHub-Ru-Translation.user.js) или [GreasyFork](https://greasyfork.org/ru/scripts/515487-github-russian-translation);
-3. Обновите страницу GitHub, если она была открыта;
+1. Установите [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/),
+2. Откройте ссылку на скрипт c [Гитхаба](https://github.com/RushanM/GitHub-Russian-Translation/raw/refs/heads/master/GitHub-Ru-Translation.user.js) или [Грисифорка](https://greasyfork.org/ru/scripts/515487-github-russian-translation);
+3. Установите скрипт;
+3. Обновите страницу Гитхаба, если она была открыта;
 4. Готово!
 
 ## Материальная поддержка
 
 Если моя работа нравится вам настолько, что вы готовы отправить мне деньги, можно сделать это по следующим ссылкам:
 
-* [Boosty](https://boosty.to/rushanm);
-* [VK Pay](https://vk.me/moneysend/deflecta);
-* [Donation Alerts](https://www.donationalerts.com/r/deflecta);
-* [ЮMoney](https://yoomoney.ru/to/410015215253910).
+* [Бусти](https://boosty.to/rushanm),
+* [ВК-Пэй](https://vk.me/moneysend/deflecta),
+* [Донейшн-алёртс](https://www.donationalerts.com/r/deflecta),
+* [Юмани](https://yoomoney.ru/to/410015215253910).
 
 Буду благодарен за каждый рубль!
