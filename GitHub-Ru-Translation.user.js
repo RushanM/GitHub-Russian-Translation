@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B8
+// @version         1-B9
 // ==/UserScript==
 
 (function() {
@@ -356,6 +356,16 @@
         });
     }
 
+    function translateOpenCopilotMenu() {
+        document.querySelectorAll('span.prc-ActionList-GroupHeading-eahp0, .Box-sc-g0xbh4-0.jtiCfm').forEach(el => {
+            const text = el.textContent.trim();
+            if (text === 'New conversation') el.textContent = 'Новый разговор';
+            if (text === 'Immersive') el.textContent = 'Раскрыть';
+            if (text === 'Open with') el.textContent = 'Открыть в';
+            if (text === 'Settings') el.textContent = 'Настройки';
+        });
+    }
+
     const observer = new MutationObserver(() => {
         translateTextContent();
         translateAttributes();
@@ -363,6 +373,46 @@
         translateTooltips();
         translateGitHubEducation();
         translateFilterMenu();
+        translateOpenCopilotMenu();
+        
+        // Перевод подвала
+        document.querySelectorAll('p.color-fg-subtle.text-small.text-light').forEach(node => {
+            if (node.textContent.trim() === '© 2025 GitHub, Inc.') {
+                node.textContent = '© компания GitHub, 2025 год';
+            }
+        });
+
+        document.querySelectorAll('a.Link').forEach(link => {
+            const text = link.textContent.trim();
+            if (text === 'About') link.textContent = 'О нас';
+            if (text === 'Blog') link.textContent = 'Блог';
+            if (text === 'Terms') link.textContent = 'Условия';
+            if (text === 'Privacy') link.textContent = 'Конфиденциальность';
+            if (text === 'Security') link.textContent = 'Безопасность';
+            if (text === 'Status') link.textContent = 'Статус';
+        });
+
+        document.querySelectorAll('.Button-label').forEach(btn => {
+            if (btn.textContent.trim() === 'Do not share my personal information') {
+                btn.textContent = 'Не передавать мои личные данные';
+            }
+            if (btn.textContent.trim() === 'Manage Cookies') {
+                btn.textContent = 'Управление куки';
+            }
+        });
+
+        // Владельцы и перейти туда
+        document.querySelectorAll('h3.ActionList-sectionDivider-title').forEach(node => {
+            if (node.textContent.trim() === 'Owners') {
+                node.textContent = 'Владельцы';
+            }
+        });
+
+        document.querySelectorAll('.ActionListItem-description.QueryBuilder-ListItem-trailing').forEach(span => {
+            if (span.textContent.trim() === 'Jump to') {
+                span.textContent = 'Перейти туда';
+            }
+        });
     });
 
     // Наблюдение за всем документом, включая изменения атрибутов
@@ -378,6 +428,7 @@
     translateTooltips();
     translateGitHubEducation();
     translateFilterMenu();
+    translateOpenCopilotMenu();
 
     // Замена «Filter»
     document.querySelectorAll('summary .octicon-filter').forEach(icon => {
