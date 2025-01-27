@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B9
+// @version         1-B10
 // ==/UserScript==
 
 (function() {
@@ -113,6 +113,7 @@
         // Поиск
         "Type / to search": "Нажмите <kbd class=\"AppHeader-search-kbd\">/</kbd> для поиска",
         "Find a repository…": "Найти репозиторий…",
+        "Find a release": "Найти выпуск",
         // Разделы главной
         "Home": "Главная",
         "Explore": "Обзор",
@@ -144,46 +145,149 @@
         "Include events from starred repositories": "Включать события из репозиториев, на которые вы поставили звезду",
         "By default, the feed shows events from repositories you sponsor or watch, and people you follow.": "По умолчанию лента отображает события из репозиториев, которые вы спонсируете или за которыми следите, а также от людей, на которых подписаны.",
         "Reset to default": "Сбросить до настроек по умолчанию",
-        "Save": "Сохранить"
+        "Save": "Сохранить",
+        "Pre-release": "Пре-релиз",
+        "github-actions": "Экшены GitHub",
+        "Draft a new release": "Подготовить новый выпуск",
+        "starred": "поставил(а) звезду на",
+        "a repository": "репозиторий",
+        "added a repository to": "добавил(а) репозиторий в список",
+        "Starred": "Звезда поставлена",
+        "Star": "Поставить звезду",
+        "Lists": "Списки"
     };
 
+    // УРА, наконец-то рабочий вариант перевода starred
+    translations["starred"] = "поставил(а) звезду на";
+
+    function getRepositoriesTranslation(count) {
+        if (count === 1) return `${count} репозиторий`;
+        if (count >= 2 && count <= 4) return `${count} репозитория`;
+        return `${count} репозиториев`;
+    }
+
+    function formatStarCount() {
+        const starCounters = document.querySelectorAll('.Counter.js-social-count');
+        starCounters.forEach(counter => {
+            let text = counter.textContent.trim();
+            if (text.includes('k')) {
+                text = text.replace('.', ',').replace('k', 'К');
+                counter.textContent = text;
+            }
+        });
+    }
+
     function translateTextContent() {
-        const elements = document.querySelectorAll('.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button');
+        const elements = document.querySelectorAll(
+            '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title, .SelectMenu-title, .d-inline'
+        );
 
         elements.forEach(el => {
-            // Проверка, содержит ли элемент дочерние элементы (<kbd>)
-            if (el.childElementCount > 0) {
-                // Сборка текстового содержания с учётом дочерних элементов
-                let text = '';
-                el.childNodes.forEach(node => {
-                    if (node.nodeType === Node.TEXT_NODE) {
-                        text += node.textContent;
-                    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'KBD') {
-                        text += '/'; // Добавление символа «/», который содержится внутри <kbd>
-                    }
-                });
-                text = text.trim();
-                if (translations[text]) {
-                    // Создание нового фрагмента с переводом и сохранение тега <kbd>
-                    const newFragment = document.createDocumentFragment();
-                    const parts = translations[text].split('<kbd class="AppHeader-search-kbd">/</kbd>');
-                    newFragment.append(document.createTextNode(parts[0]));
-                    const kbd = document.createElement('kbd');
-                    kbd.className = 'AppHeader-search-kbd';
-                    kbd.textContent = '/';
-                    newFragment.append(kbd);
-                    newFragment.append(document.createTextNode(parts[1]));
-                    // Очистка элемента и вставка нового контента
-                    el.innerHTML = '';
-                    el.appendChild(newFragment);
-                }
-            } else {
+            if (el.tagName === 'IMG' && el.alt.trim() in translations) {
+                el.alt = translations[el.alt.trim()];
+            } else if (el.childElementCount === 0) {
                 const text = el.textContent.trim();
                 if (translations[text]) {
                     el.textContent = translations[text];
+                } else {
+                    const match = text.match(/^(\d+) repositories$/);
+                    if (match) {
+                        const count = parseInt(match[1], 10);
+                        el.textContent = getRepositoriesTranslation(count);
+                    } else if (text === 'added a repository to') {
+                        el.textContent = 'добавил(а) репозиторий в список';
+                    }
+                }
+            } else {
+                // Проверка, содержит ли элемент дочерние элементы (<kbd>)
+                if (el.childElementCount > 0) {
+                    // Сборка текстового содержания с учётом дочерних элементов
+                    let text = '';
+                    el.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            text += node.textContent;
+                        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'KBD') {
+                            text += '/'; // Добавление символа «/», который содержится внутри <kbd>
+                        }
+                    });
+                    text = text.trim();
+                    if (translations[text]) {
+                        // Создание нового фрагмента с переводом и сохранение тега <kbd>
+                        const newFragment = document.createDocumentFragment();
+                        const parts = translations[text].split('<kbd class="AppHeader-search-kbd">/</kbd>');
+                        newFragment.append(document.createTextNode(parts[0]));
+                        const kbd = document.createElement('kbd');
+                        kbd.className = 'AppHeader-search-kbd';
+                        kbd.textContent = '/';
+                        newFragment.append(kbd);
+                        newFragment.append(document.createTextNode(parts[1]));
+                        // Очистка элемента и вставка нового контента
+                        el.innerHTML = '';
+                        el.appendChild(newFragment);
+                    };
+                    el.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const originalText = node.textContent;
+                            const trimmed = originalText.trim();
+                            if (translations[trimmed]) {
+                                node.textContent = translations[trimmed];
+                            } else if (originalText.includes("starred")) {
+                                node.textContent = originalText.replace("starred", translations["starred"]);
+                            } else if (originalText.includes("added a repository to")) {
+                                node.textContent = originalText.replace("added a repository to", 'добавил(а) репозиторий в список');
+                            } else if (originalText.includes("Notifications")) {
+                                node.textContent = originalText.replace("Notifications", 'Уведомления');
+                            }
+                        }
+                    });
+                    // Последный выхват строчек
+                    if (/\bstarred\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, translations["starred"]);
+                    }
+                    if (/\badded a repository to\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\badded a repository to\b/g, 'добавил(а) репозиторий в список');
+                    }
+                    if (/\bNotifications\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\bNotifications\b/g, 'Уведомления');
+                    }
+                } else {
+                    // Сначала каждый узел
+                    el.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            let originalText = node.textContent;
+                            // Переводы
+                            originalText = originalText.replace(/\bstarred\b/g, translations["starred"]);
+                            originalText = originalText.replace(/\badded a repository to\b/g, 'добавил(а) репозиторий в список');
+                            originalText = originalText.replace(/\bNotifications\b/g, 'Уведомления');
+                            node.textContent = originalText;
+                        }
+                    });
+
+                    // Если всё ещё остаётся, заменить внутренний HTML
+                    if (/\bstarred\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, translations["starred"]);
+                    }
+                    if (/\badded a repository to\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\badded a repository to\b/g, 'добавил(а) репозиторий в список');
+                    }
+                    if (/\bNotifications\b/.test(el.innerHTML)) {
+                        el.innerHTML = el.innerHTML.replace(/\bNotifications\b/g, 'Уведомления');
+                    }
                 }
             }
         });
+        formatStarCount();
+    }
+
+    // Рекурсивная функция
+    function replaceAllStarred(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            node.textContent = node.textContent.replace(/\bstarred\b/g, translations["starred"]);
+            node.textContent = node.textContent.replace(/\badded a repository to\b/g, 'добавил(а) репозиторий в список');
+            node.textContent = node.textContent.replace(/\bNotifications\b/g, 'Уведомления');
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            node.childNodes.forEach(child => replaceAllStarred(child));
+        }
     }
 
     function translateAttributes() {
@@ -413,6 +517,13 @@
                 span.textContent = 'Перейти туда';
             }
         });
+
+        // Замена «added a repository to»
+        document.querySelectorAll('h3.h5.text-normal.color-fg-muted.d-flex.flex-items-center.flex-row.flex-nowrap.width-fit span.flex-1 span.flex-shrink-0').forEach(span => {
+            if (span.textContent.trim() === 'added a repository to') {
+                span.textContent = 'добавил(а) репозиторий в список';
+            }
+        });
     });
 
     // Наблюдение за всем документом, включая изменения атрибутов
@@ -421,6 +532,19 @@
         subtree: true,
         attributes: true
     });
+
+    // Будущие изменения
+    const observerStarred = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => replaceAllStarred(node));
+        });
+    });
+
+    // Запуск
+    observerStarred.observe(document.body, { childList: true, subtree: true });
+
+    // Начальное прохождение
+    replaceAllStarred(document.body);
 
     translateTextContent();
     translateAttributes();
