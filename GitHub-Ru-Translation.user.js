@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B11
+// @version         1-B12
 // ==/UserScript==
 
 (function () {
@@ -177,6 +177,68 @@
         });
     }
 
+    // Функция для перевода абсолютного времени во всплывающей подсказке, например:
+    // «Feb 24, 2025, 3:09 PM GMT+3» → «24 февраля 2025, 15:09 по московскому времени»
+    function translateAbsoluteTime(text) {
+        // Маппирование месяцев
+        const monthMapping = {
+            Jan: 'января',
+            Feb: 'февраля',
+            Mar: 'марта',
+            Apr: 'апреля',
+            May: 'мая',
+            Jun: 'июня',
+            Jul: 'июля',
+            Aug: 'августа',
+            Sep: 'сентября',
+            Oct: 'октября',
+            Nov: 'ноября',
+            Dec: 'декабря'
+        };
+
+        // Регулярное выражение для извлечения компонентов времени
+        // Пример: Feb 24, 2025, 3:09 PM GMT+3
+        const regex = /^([A-Z][a-z]{2}) (\d{1,2}), (\d{4}), (\d{1,2}):(\d{2})\s*(AM|PM)\s*GMT\+3$/;
+        const match = text.match(regex);
+        if (match) {
+            const monthEn = match[1];
+            const day = match[2];
+            const year = match[3];
+            let hour = parseInt(match[4], 10);
+            const minute = match[5];
+            const period = match[6];
+
+            // Преобразование в 24-часовой формат
+            if (period === 'PM' && hour !== 12) {
+                hour += 12;
+            } else if (period === 'AM' && hour === 12) {
+                hour = 0;
+            }
+            // Форматирование часов с ведущим нулём
+            const hourStr = hour < 10 ? '0' + hour : hour.toString();
+            const monthRu = monthMapping[monthEn] || monthEn;
+            return `${day} ${monthRu} ${year}, ${hourStr}:${minute} по московскому времени`;
+        }
+        return text;
+    }
+
+    // Функция для перевода элементов <relative-time>
+    function translateRelativeTimes() {
+        const timeElements = document.querySelectorAll('relative-time');
+        timeElements.forEach(el => {
+            // Если элемент уже переведён, можно добавить атрибут data-translated
+            if (el.getAttribute('data-translated')) return;
+
+            // Перевод всплывающей подсказки, если атрибут title существует
+            if (el.hasAttribute('title')) {
+                const originalTitle = el.getAttribute('title');
+                el.setAttribute('title', translateAbsoluteTime(originalTitle));
+            }
+            // Отмечаем элемент как переведённый
+            el.setAttribute('data-translated', 'true');
+        });
+    }
+
     function translateTextContent() {
         const elements = document.querySelectorAll(
             '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title, .SelectMenu-title, .d-inline'
@@ -280,6 +342,7 @@
             }
         });
         formatStarCount();
+        translateRelativeTimes();
     }
 
     // Рекурсивная функция
