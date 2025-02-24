@@ -15,10 +15,10 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B10
+// @version         1-B11
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     const translations = {
@@ -68,7 +68,6 @@
         "Actions": "Экшены",
         "Projects": "Проекты",
         "Wiki": "Вики",
-        "Security": "Безопасность",
         "Insights": "Аналитика",
         "Settings": "Настройки",
         "Releases": "Выпуски",
@@ -151,6 +150,7 @@
         "Draft a new release": "Подготовить новый выпуск",
         "starred": "поставил(а) звезду на",
         "a repository": "репозиторий",
+        "your repository": "ваш репозиторий",
         "added a repository to": "добавил(а) репозиторий в список",
         "Starred": "Звезда поставлена",
         "Star": "Поставить звезду",
@@ -199,7 +199,7 @@
                     }
                 }
             } else {
-                // Проверка, содержит ли элемент дочерние элементы (<kbd>)
+                // Часть функции translateTextContent(), отвечающая за обработку элементов с дочерними элементами
                 if (el.childElementCount > 0) {
                     // Сборка текстового содержания с учётом дочерних элементов
                     let text = '';
@@ -207,20 +207,23 @@
                         if (node.nodeType === Node.TEXT_NODE) {
                             text += node.textContent;
                         } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'KBD') {
-                            text += '/'; // Добавление символа «/», который содержится внутри <kbd>
+                            text += '/'; // Добавление символа «/» из <kbd>
                         }
                     });
                     text = text.trim();
                     if (translations[text]) {
-                        // Создание нового фрагмента с переводом и сохранение тега <kbd>
+                        // Создание нового фрагмента с переводом и сохранение тега <kbd>, если перевод соответствует шаблону
                         const newFragment = document.createDocumentFragment();
                         const parts = translations[text].split('<kbd class="AppHeader-search-kbd">/</kbd>');
                         newFragment.append(document.createTextNode(parts[0]));
-                        const kbd = document.createElement('kbd');
-                        kbd.className = 'AppHeader-search-kbd';
-                        kbd.textContent = '/';
-                        newFragment.append(kbd);
-                        newFragment.append(document.createTextNode(parts[1]));
+                        // Добавлять тег <kbd> только если есть вторая часть перевода
+                        if (parts.length > 1 && parts[1] !== undefined) {
+                            const kbd = document.createElement('kbd');
+                            kbd.className = 'AppHeader-search-kbd';
+                            kbd.textContent = '/';
+                            newFragment.append(kbd);
+                            newFragment.append(document.createTextNode(parts[1]));
+                        }
                         // Очистка элемента и вставка нового контента
                         el.innerHTML = '';
                         el.appendChild(newFragment);
@@ -478,7 +481,7 @@
         translateGitHubEducation();
         translateFilterMenu();
         translateOpenCopilotMenu();
-        
+
         // Перевод подвала
         document.querySelectorAll('p.color-fg-subtle.text-small.text-light').forEach(node => {
             if (node.textContent.trim() === '© 2025 GitHub, Inc.') {
@@ -565,6 +568,6 @@
             });
         }
     });
-    
+
     translateFilterMenu();
 })();
