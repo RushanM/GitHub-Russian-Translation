@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B12
+// @version         1-B13
 // ==/UserScript==
 
 (function () {
@@ -120,7 +120,7 @@
         // Главная
         "Top repositories": "Лучшие репозитории",
         "Recent activity": "Недавняя активность",
-        // Подзагаловки главной
+        // Подзаголовки главной
         "Show more": "Показать больше",
         "Filter": "Фильтр",
         "Events": "События",
@@ -239,12 +239,24 @@
         });
     }
 
+    // функция для проверки, находится ли элемент в контейнере, где перевод нежелателен
+    function isExcludedElement(el) {
+        // если элемент находится внутри заголовков Markdown, то не переводим
+        if (el.closest('.markdown-heading')) return true;
+        // если элемент находится внутри ячейки с именем каталога, то не переводим
+        if (el.closest('.react-directory-filename-column')) return true;
+        return false;
+    }
+
     function translateTextContent() {
         const elements = document.querySelectorAll(
-            '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title, .SelectMenu-title, .d-inline'
+            '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title'
         );
 
         elements.forEach(el => {
+            // если элемент подпадает под исключения, пропускаем его
+            if (isExcludedElement(el)) return;
+
             if (el.tagName === 'IMG' && el.alt.trim() in translations) {
                 el.alt = translations[el.alt.trim()];
             } else if (el.childElementCount === 0) {
@@ -289,7 +301,7 @@
                         // Очистка элемента и вставка нового контента
                         el.innerHTML = '';
                         el.appendChild(newFragment);
-                    };
+                    }
                     el.childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE) {
                             const originalText = node.textContent;
@@ -442,15 +454,16 @@
             createNewTooltip.textContent = 'Создать новый…';
         }
 
-        document.querySelectorAll('tool-tip[role="tooltip"]').forEach(tooltip => {
-            if (tooltip.textContent.trim() === 'Issues') {
-                tooltip.textContent = 'Темы';
-            }
-        });
+        const tooltipTranslations = {
+            'Issues': 'Темы',
+            'Pull requests': 'Запросы на слияние',
+            'Send': 'Отправить'
+        };
 
         document.querySelectorAll('tool-tip[role="tooltip"]').forEach(tooltip => {
-            if (tooltip.textContent.trim() === 'Pull requests') {
-                tooltip.textContent = 'Запросы на слияние';
+            const text = tooltip.textContent.trim();
+            if (tooltipTranslations[text]) {
+                tooltip.textContent = tooltipTranslations[text];
             }
         });
 
@@ -458,12 +471,6 @@
         if (unreadTooltip && unreadTooltip.textContent.trim() === 'You have unread notifications') {
             unreadTooltip.textContent = 'У вас есть непрочитанные уведомления';
         }
-
-        document.querySelectorAll('tool-tip[role="tooltip"]').forEach(tooltip => {
-            if (tooltip.textContent.trim() === 'Send') {
-                tooltip.textContent = 'Отправить';
-            }
-        });
     }
 
     function translateGitHubEducation() {
