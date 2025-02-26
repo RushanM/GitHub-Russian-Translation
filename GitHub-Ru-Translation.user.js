@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B13
+// @version         1-B14
 // ==/UserScript==
 
 (function () {
@@ -241,9 +241,9 @@
 
     // функция для проверки, находится ли элемент в контейнере, где перевод нежелателен
     function isExcludedElement(el) {
-        // если элемент находится внутри заголовков Markdown, то не переводим
+        // Если элемент находится внутри заголовков Markdown, то не переводим
         if (el.closest('.markdown-heading')) return true;
-        // если элемент находится внутри ячейки с именем каталога, то не переводим
+        // Если элемент находится внутри ячейки с названием каталога, то не переводим
         if (el.closest('.react-directory-filename-column')) return true;
         return false;
     }
@@ -254,7 +254,7 @@
         );
 
         elements.forEach(el => {
-            // если элемент подпадает под исключения, пропускаем его
+            // Если элемент подпадает под исключения, пропускаем его
             if (isExcludedElement(el)) return;
 
             if (el.tagName === 'IMG' && el.alt.trim() in translations) {
@@ -428,7 +428,33 @@
             } else if (text === 'Recent commits in <span class="fgColor-muted">torvalds/linux</span>') {
                 div.innerHTML = 'Последние правки в <span class="fgColor-muted">torvalds/linux</span>';
             } else if (text === 'What can I do here?') {
-                div.innerHTML = 'Чем заняться?';
+                div.innerHTML = 'Чем ты полезен?';
+            } else if (text === 'Learn JS closures') {
+                div.innerHTML = 'Научи замыканиям в JavaScript';
+            } else if (text === 'List Git history danger zones') {
+                div.innerHTML = 'Перечисли опасные зоны в истории Git';
+            } else if (text === 'Python env variables guide') {
+                div.innerHTML = 'Руководство по переменным окружения в Python';
+            } else if (text === 'Python variable passing guide') {
+                div.innerHTML = 'Руководство по передаче переменных в Python';
+            } else if (text === 'Learn Python star operators') {
+                div.innerHTML = 'Расскажи про операторы со звёздочкой в Python';
+            } else if (text === 'Explain fork sync process') {
+                div.innerHTML = 'Объясни процесс синхронизации форков';
+            } else if (text === 'Explain RESTful basics') {
+                div.innerHTML = 'Объясни основы RESTful';
+            } else if (text === 'Compare JS equality operators') {
+                div.innerHTML = 'Сравни операторы равенства в JavaScript';
+            } else if (text === 'Understand Java access levels') {
+                div.innerHTML = 'Разбери уровни доступа в Java';
+            } else if (text === 'Explain CLI repository setup') {
+                div.innerHTML = 'Объясни настройку репозитория через CLI';
+            } else if (text === 'Learn JS import patterns') {
+                div.innerHTML = 'Научи паттернам импортирования в JavaScript';
+            } else if (text === 'Explore Java Map Iterations') {
+                div.innerHTML = 'Исследуй способы итерации по Map в Java';
+            } else if (text === 'Explain pull request basics') {
+                div.innerHTML = 'Объясни основы запросов на слияние';
             }
         });
     }
