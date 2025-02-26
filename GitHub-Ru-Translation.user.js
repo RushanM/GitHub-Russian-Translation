@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B14
+// @version         1-B15
 // ==/UserScript==
 
 (function () {
@@ -154,7 +154,15 @@
         "added a repository to": "добавил(а) репозиторий в список",
         "Starred": "Звезда поставлена",
         "Star": "Поставить звезду",
-        "Lists": "Списки"
+        "Lists": "Списки",
+
+        // История изменений
+        "Latest changes": "Последние изменения",
+        "Enhanced billing platform is now available for personal accounts": "Улучшенная платформа выставления счетов теперь доступна для личных учётных записей",
+        "Repositories – Updated insight views (General Availability)": "Репозитории — обновлённые представления аналитики (общедоступная версия)",
+        "GitHub Enterprise Server 3.16 release candidate is now available": "Стал доступен кандидат на выпуск 3.16 GitHub Enterprise Server",
+        "Refining messages and reloading responses in Copilot Chat is now in public preview": "Уточнение сообщений и перезагрузка ответов в чате Копайлота теперь в публичном тестировании",
+        "View changelog →": "Просмотреть историю изменений →"
     };
 
     // УРА, наконец-то рабочий вариант перевода starred
@@ -355,6 +363,12 @@
         });
         formatStarCount();
         translateRelativeTimes();
+
+        document.querySelectorAll('.Button-label').forEach(btn => {
+            if (btn.textContent.trim() === "New") {
+                btn.textContent = "Создать";
+            }
+        });
     }
 
     // Рекурсивная функция
@@ -566,6 +580,23 @@
             if (text === 'Immersive') el.textContent = 'Раскрыть';
             if (text === 'Open with') el.textContent = 'Открыть в';
             if (text === 'Settings') el.textContent = 'Настройки';
+            if (text === 'Your profile') el.textContent = 'Ваш профиль';
+            if (text === 'Your repositories') el.textContent = 'Ваши репозитории';
+            // Копайлот — это название сервиса Гитхаба. Но после добавления «your» нельзя сказать, что сервис Гитхаба вдруг стал нашим («Ваш Копайлот»). Он не стал нашим, это игра слов. Фраза «your copilot» означает «ваш помощник».
+            if (text === 'Your Copilot') el.textContent = 'Ваш помощник';
+            if (text === 'Your projects') el.textContent = 'Ваши проекты';
+            if (text === 'Your stars') el.textContent = 'Ваши звёзды';
+            if (text === 'Your gists') el.textContent = 'Ваши джисты';
+            if (text === 'Your organizations') el.textContent = 'Ваши организации';
+            if (text === 'Your enterprises') el.textContent = 'Ваши предприятия';
+            if (text === 'Your sponsors') el.textContent = 'Ваши спонсоры';
+            if (text === 'Try Enterprise') el.textContent = 'Попробовать GitHub для предприятий';
+            if (text === 'Feature preview') el.textContent = 'Тестируемые возможности';
+            if (text === 'GitHub Website') el.textContent = 'Сайт GitHub';
+            if (text === 'GitHub Docs') el.textContent = 'Документация GitHub';
+            if (text === 'GitHub Support') el.textContent = 'Поддержка GitHub';
+            if (text === 'GitHub Community') el.textContent = 'Сообщество GitHub';
+            if (text === 'Sign out') el.textContent = 'Выйти из учётной записи';
         });
     }
 
