@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B15
+// @version         1-B16
 // ==/UserScript==
 
 (function () {
@@ -152,8 +152,12 @@
         "a repository": "репозиторий",
         "your repository": "ваш репозиторий",
         "added a repository to": "добавил(а) репозиторий в список",
-        "Starred": "Звезда поставлена",
+
+        // Кнопки звезды
         "Star": "Поставить звезду",
+        "Starred": "Звезда поставлена",
+        "Unstar this repository?": "Убрать звезду с этого репозитория?",
+        "Unstar": "Убрать звезду",
         "Lists": "Списки",
 
         // История изменений
@@ -162,7 +166,12 @@
         "Repositories – Updated insight views (General Availability)": "Репозитории — обновлённые представления аналитики (общедоступная версия)",
         "GitHub Enterprise Server 3.16 release candidate is now available": "Стал доступен кандидат на выпуск 3.16 GitHub Enterprise Server",
         "Refining messages and reloading responses in Copilot Chat is now in public preview": "Уточнение сообщений и перезагрузка ответов в чате Копайлота теперь в публичном тестировании",
-        "View changelog →": "Просмотреть историю изменений →"
+        "View changelog →": "Просмотреть историю изменений →",
+
+        // Кнопки репозитория
+        "Fork": "Разветвить",
+        "Follow": "Следить",
+        "Sponsor": "Спонсировать"
     };
 
     // УРА, наконец-то рабочий вариант перевода starred
@@ -600,6 +609,32 @@
         });
     }
 
+    function translateStarButtons() {
+        // Находим все span с классом d-inline внутри кнопок
+        document.querySelectorAll('.BtnGroup-item .d-inline').forEach(span => {
+            const text = span.textContent.trim();
+            if (text === 'Star') {
+                span.textContent = translations["Star"] || 'Поставить звезду';
+            } else if (text === 'Starred') {
+                span.textContent = translations["Starred"] || 'Звезда поставлена';
+            }
+        });
+        
+        // Переводим заголовок в диалоговом окне отмены звезды
+        document.querySelectorAll('.Box-title').forEach(title => {
+            if (title.textContent.trim() === 'Unstar this repository?') {
+                title.textContent = translations["Unstar this repository?"] || 'Убрать звезду с этого репозитория?';
+            }
+        });
+        
+        // Переводим кнопку Unstar в диалоговом окне
+        document.querySelectorAll('.btn-danger.btn').forEach(btn => {
+            if (btn.textContent.trim() === 'Unstar') {
+                btn.textContent = translations["Unstar"] || 'Убрать звезду';
+            }
+        });
+    }
+
     const observer = new MutationObserver(() => {
         translateTextContent();
         translateAttributes();
@@ -608,6 +643,7 @@
         translateGitHubEducation();
         translateFilterMenu();
         translateOpenCopilotMenu();
+        translateStarButtons();
 
         // Перевод подвала
         document.querySelectorAll('p.color-fg-subtle.text-small.text-light').forEach(node => {
@@ -683,6 +719,7 @@
     translateGitHubEducation();
     translateFilterMenu();
     translateOpenCopilotMenu();
+    translateStarButtons();
 
     // Замена «Filter»
     document.querySelectorAll('summary .octicon-filter').forEach(icon => {
