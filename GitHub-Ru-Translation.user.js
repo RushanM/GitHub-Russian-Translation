@@ -15,7 +15,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B16
+// @version         1-B17
 // ==/UserScript==
 
 (function () {
@@ -169,7 +169,7 @@
         "View changelog →": "Просмотреть историю изменений →",
 
         // Кнопки репозитория
-        "Fork": "Разветвить",
+        // "Fork": "Разветвить",
         "Follow": "Следить",
         "Sponsor": "Спонсировать"
     };
@@ -619,18 +619,72 @@
                 span.textContent = translations["Starred"] || 'Звезда поставлена';
             }
         });
-        
+
         // Переводим заголовок в диалоговом окне отмены звезды
         document.querySelectorAll('.Box-title').forEach(title => {
             if (title.textContent.trim() === 'Unstar this repository?') {
                 title.textContent = translations["Unstar this repository?"] || 'Убрать звезду с этого репозитория?';
             }
         });
-        
+
         // Переводим кнопку Unstar в диалоговом окне
         document.querySelectorAll('.btn-danger.btn').forEach(btn => {
             if (btn.textContent.trim() === 'Unstar') {
                 btn.textContent = translations["Unstar"] || 'Убрать звезду';
+            }
+        });
+    }
+
+    function translateRepositoryButtons() {
+        // Перевод кнопки Sponsor
+        document.querySelectorAll('.Button-label .v-align-middle').forEach(span => {
+            const text = span.textContent.trim();
+            if (text === 'Sponsor') {
+                span.textContent = translations["Sponsor"] || 'Спонсировать';
+            }
+        });
+
+        // Перевод кнопки Watch
+        document.querySelectorAll('.prc-Button-Label-pTQ3x').forEach(span => {
+            if (span.textContent.trim().startsWith('Watch')) {
+                // Сохраняем счётчик
+                const counter = span.querySelector('.Counter');
+                const counterHTML = counter ? counter.outerHTML : '';
+
+                // Новый текст с сохранённым счетчиком
+                span.innerHTML = (translations["Watch"] || 'Следить') +
+                    (counterHTML ? ' ' + counterHTML : '');
+            }
+        });
+
+        // Перевод кнопки Fork
+        document.querySelectorAll('.BtnGroup.d-flex').forEach(btnGroup => {
+            // Проверяем, что это непереведенная кнопка Fork
+            if (btnGroup.textContent.includes('Fork') && !btnGroup.hasAttribute('data-translated-fork')) {
+                // Сначала сохраним все важные элементы
+                const counter = btnGroup.querySelector('#repo-network-counter');
+                const details = btnGroup.querySelector('details');
+
+                // Создаём функцию для глубокого обхода DOM-дерева
+                function translateNode(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        // Регулярное выражение для поиска слова «Fork» с сохранением пробелов
+                        const regex = /(\s*)Fork(\s*)/g;
+                        node.textContent = node.textContent.replace(regex,
+                            (match, before, after) => before + (translations["Fork"] || 'Разветвить') + after);
+                    } else {
+                        // Рекурсивный обход всех дочерних узлов
+                        for (let i = 0; i < node.childNodes.length; i++) {
+                            translateNode(node.childNodes[i]);
+                        }
+                    }
+                }
+
+                // Запускаем перевод с корневого элемента
+                translateNode(btnGroup);
+
+                // Отмечаем элемент как обработанный
+                btnGroup.setAttribute('data-translated-fork', 'true');
             }
         });
     }
@@ -644,6 +698,7 @@
         translateFilterMenu();
         translateOpenCopilotMenu();
         translateStarButtons();
+        translateRepositoryButtons();
 
         // Перевод подвала
         document.querySelectorAll('p.color-fg-subtle.text-small.text-light').forEach(node => {
@@ -720,6 +775,7 @@
     translateFilterMenu();
     translateOpenCopilotMenu();
     translateStarButtons();
+    translateRepositoryButtons();
 
     // Замена «Filter»
     document.querySelectorAll('summary .octicon-filter').forEach(icon => {
