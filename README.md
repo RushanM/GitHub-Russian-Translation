@@ -1,10 +1,10 @@
 # Русификатор Гитхаба
 
-Русификатор [Гитхаба](https://github.com/), реализованный в виде скрипта для [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/).
+Русификатор [Гитхаба](https://github.com/), реализованный в виде скрипта для [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) и его аналогов.
 
 ## Установка
 
-1. Установите [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/),
+1. Установите [Вайлентманки](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) или аналог,
 2. Откройте ссылку на скрипт c [Гитхаба](https://github.com/RushanM/GitHub-Russian-Translation/raw/refs/heads/master/GitHub-Ru-Translation.user.js) или [Грисифорка](https://greasyfork.org/ru/scripts/515487-github-russian-translation);
 3. Установите скрипт;
 3. Обновите страницу Гитхаба, если она была открыта;
