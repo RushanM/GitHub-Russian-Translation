@@ -17,7 +17,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B18
+// @version         1-B19
 // ==/UserScript==
 
 (function () {
@@ -179,14 +179,21 @@
         
         // 4 марта 2025
         // 
-        "Introducing GitHub Secret Protection and GitHub Code Security": "Представляем «Защиту секретов» и «Безопасность кода» от GitHub",
-        // 
         "Find secrets in your organization with the secret risk assessment": "Найдите секреты в вашей организации с помощью оценки риска утечек секретов",
         // 
         "Improved pull request merge experience is now generally available": "Улучшенный процесс слияния запросов на слияние теперь доступен для всех",
+        //
+        "billing": "выставление-счетов",
+        "enterprise": "для-предприятий",
+        "Introducing GitHub Secret Protection and GitHub Code Security": "Представляем «Защиту секретов» и «Безопасность кода» от GitHub",
 
         // 5 марта 2025
         // 
+        "advanced-security": "продвинутая-безопасность",
+        "code-scanning": "сканирование-кода",
+        "secret-scanning": "сканирование-секретов",
+        "security-and-compliance": "безопасность-и-соответствие",
+        "March 5, 2025": "5 марта 2025",
         "Delegated alert dismissal for code scanning and secret scanning now available in public preview": "Делегированное закрытие уведомлений для сканирования кода и секретов теперь доступно в публичном предварительном просмотре",
         "Keep control over the security posture of your organization with delegated alert dismissal. With this feature, you can require a review process before alerts are dismissed in code scanning and secret scanning. This helps you manage security risk better, as well as meet audit and compliance requirements.": "Сохраните контроль над уровнем безопасности вашей организации с помощью делегированного закрытия уведомлений. Эта функция позволяет требовать прохождения проверки перед тем, как уведомления в системах сканирования кода и секретов будут закрыты. Это помогает эффективнее управлять рисками в области безопасности, а также соответствовать требованиям аудита и нормативным стандартам.",
         "While this feature adds oversight and control, organizations should carefully balance security needs with development velocity. Things to consider include:": "Несмотря на то, что данная функция усиливает контроль, организациям следует тщательно балансировать потребности в безопасности и скорость разработки. При этом стоит учитывать следующие моменты:",
@@ -195,13 +202,17 @@
         "Who should review and approve dismissal requests.": "кто отвечает за проверку и одобрение запросов на закрытие уведомлений.",
         "This feature can be configured and managed at scale using security configurations or at the repository level.": "Эту функцию можно настроить и управлять ею как на уровне всей организации посредством настроек безопасности, так и на уровне отдельных репозиториев.",
         "Each dismissal request requires a mandatory comment explaining the rationale, with email notifications sent to both approvers and requesters throughout the process. If rejected, the alert remains open.": "Каждый запрос на закрытие уведомления требует обязательного комментария с пояснением причин, а уведомления по электронной почте отправляются как утверждающим, так и запрашивающим участникам процесса. Если запрос отклоняется, уведомление остаётся активным.",
-        "People with the organization owner or security manager role can review and approve dismissal requests by default. The state of previously dismissed alerts does not change when enabling this feature.": "По умолчанию лица с ролями владельца организации или менеджера по безопасности могут проверять и одобрять запросы на закрытие уведомлений. При включении этой функции статус ранее закрытых уведомлений не изменяется.",
+        "People with the": "По умолчанию лица с ролями",
         "organization owner": "владельца организации",
+        "or": "или",
         "security manager": "менеджера по безопасности",
+        "role can review and approve dismissal requests by default. The state of previously dismissed alerts does not change when enabling this feature.": "могут проверять и одобрять запросы на закрытие уведомлений. При включении этой функции статус ранее закрытых уведомлений не изменяется.",
         "The dismissal and approval process is visible on the alert timeline, included on the audit log, and accessible through both the REST API and webhooks.": "Процесс закрытия и утверждения уведомлений отображается в хронологии уведомлений, включён в журнал аудита и доступен через API REST и вебхуки.",
-        "You can enable this feature today for code scanning and secret scanning in GitHub Enterprise Cloud. It will also be available in version 3.17 of GitHub Enterprise Server.": "Вы можете включить эту функцию уже сегодня для сканирования кода и секретов в «Облаке „GitHub для предприятий“». Она также станет доступна в версии 3.17 «Сервера „GitHub для предприятий“».",
+        "You can enable this feature today for": "Вы можете включить эту функцию уже сегодня для ",
         "code scanning": "сканирования кода",
+        "and": " и ",
         "secret scanning": "секретов",
+        "in GitHub Enterprise Cloud. It will also be available in version 3.17 of GitHub Enterprise Server.": " в «Облаке „GitHub для предприятий“». Она также станет доступна в версии 3.17 «Сервера „GitHub для предприятий“».",
 
         // Кнопки репозитория
         // "Fork": "Разветвить",
@@ -302,7 +313,7 @@
 
     function translateTextContent() {
         const elements = document.querySelectorAll(
-            '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title'
+            '.ActionList-sectionDivider-title, .ActionListItem-label, span[data-content], .AppHeader-context-item-label, #qb-input-query, .Truncate-text, h2, button, .Label, a, img[alt], .Box-title, .post__content p, .post__content li'
         );
 
         elements.forEach(el => {
