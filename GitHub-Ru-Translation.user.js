@@ -12,12 +12,12 @@
 // @license         MIT
 // @match           https://github.com/*
 // @match           https://github.blog/*
-// @match           https://education.github.com/
+// @match           https://education.github.com/*
 // @run-at          document-end
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B19
+// @version         1-B20
 // ==/UserScript==
 
 (function () {
@@ -217,7 +217,12 @@
         // Кнопки репозитория
         // "Fork": "Разветвить",
         "Follow": "Следить",
-        "Sponsor": "Спонсировать"
+        "Sponsor": "Спонсировать",
+
+        // Education
+        "Back to GitHub Education": "На главную страницу GitHub Education",
+        "LaunchPad": "Быстрый старт",
+        "Intro to GitHub": "Начало пользования GitHub"
     };
 
     // УРА, наконец-то рабочий вариант перевода starred
