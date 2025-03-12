@@ -17,11 +17,16 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B20
+// @version         1-B21
 // ==/UserScript==
 
 (function () {
     'use strict';
+
+    const interFontLink = document.createElement('link');
+    interFontLink.rel = 'stylesheet';
+    interFontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
+    document.head.appendChild(interFontLink);
 
     const translations = {
         "Public profile": "Публичный профиль",
@@ -176,7 +181,7 @@
         "GitHub Enterprise Server 3.16 release candidate is now available": "Стал доступен кандидат на выпуск 3.16 «Сервера „GitHub для предприятий“»",
         // 
         "Refining messages and reloading responses in Copilot Chat is now in public preview": "Уточнение сообщений и перезагрузка ответов в чате Копайлота теперь в публичном предварительном просмотре",
-        
+
         // 4 марта 2025
         // 
         "Find secrets in your organization with the secret risk assessment": "Найдите секреты в вашей организации с помощью оценки риска утечек секретов",
@@ -222,7 +227,19 @@
         // Education
         "Back to GitHub Education": "На главную страницу GitHub Education",
         "LaunchPad": "Быстрый старт",
-        "Intro to GitHub": "Начало пользования GitHub"
+        "Intro to GitHub": "Начало пользования GitHub",
+        "Action Items": "Что нужно сделать",
+        "Complete the GitHub Flow course": "Пройдите курс по GitHub Flow",
+        "Free Benefits": "Бесплатные бонусы",
+        "Est. Time": "Ориентировочное время",
+        "30 minutes": "30 минут",
+        "Level": "Уровень",
+        "In this Experience": "В этом курсе",
+        "Overview": "Обзор",
+        "About this Experience": "О курсе",
+        "Take action": "Приступите к выполнению",
+        "GitHub flow is a lightweight, branch-based workflow. In this Experience you'll learn the basics of the GitHub Flow including creating and making changes to branches within a repository, as well as creating and merging pull requests. The GitHub flow is useful for everyone, not just developers.": "GitHub Flow — это простой, основанный на ветках рабочий процесс. В этом курсе вы узнаете основы GitHub Flow, включая создание и изменение веток в репозитории, а также создание и принятие запросов на слияние. GitHub Flow полезен для всех, не только для разработчиков.",
+        "In four easy steps, you will create a branch, commit a file to that branch, open a pull request and merge that pull request.": "За четыре простых шага вы создадите ветку, внесёте в неё файл, откроете запрос на слияние и подтвердите его."
     };
 
     // УРА, наконец-то рабочий вариант перевода starred
@@ -592,6 +609,51 @@
                 link.textContent = 'Перейти в GitHub Education';
             }
         });
+
+        document.querySelectorAll('.h5.color-fg-on-emphasis.text-mono').forEach(el => {
+            if (el.textContent.trim() === 'LaunchPad') {
+                el.textContent = translations['LaunchPad'];
+            }
+        });
+
+        document.querySelectorAll('.experience__gradient.experience__title').forEach(el => {
+            if (el.textContent.trim() === 'Intro to GitHub') {
+                el.textContent = translations['Intro to GitHub'];
+            }
+        });
+
+        // Шрифт Inter
+        const educationNavBlock = document.querySelector('.d-flex.flex-justify-center.flex-md-justify-start.pb-5.pb-sm-7');
+        if (educationNavBlock) {
+            educationNavBlock.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
+        }
+
+        document.querySelectorAll('header h1.mb-5').forEach(el => {
+            el.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
+        });
+    }
+
+    function translateExperienceHeaderItems() {
+        // Перевод заголовков и текста в блоке experience__header__items
+        document.querySelectorAll('.experience__header__item .experience__hero__heading').forEach(el => {
+            const text = el.textContent.trim();
+            if (translations[text]) {
+                el.textContent = translations[text];
+            }
+        });
+        
+        // Перевод основного текста в блоке experience__header__items
+        document.querySelectorAll('.experience__header__item p.color-fg-on-emphasis').forEach(el => {
+            const text = el.textContent.trim();
+            if (translations[text]) {
+                el.textContent = translations[text];
+            }
+        });
+        
+        // Шрифт Inter ко всему блоку для лучшей поддержки кириллицы
+        document.querySelectorAll('.color-fg-on-emphasis').forEach(el => {
+            el.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
+        });
     }
 
     function translateFilterMenu() {
@@ -746,6 +808,7 @@
         translateCopilotPreview();
         translateTooltips();
         translateGitHubEducation();
+        translateExperienceHeaderItems();
         translateFilterMenu();
         translateOpenCopilotMenu();
         translateStarButtons();
@@ -823,6 +886,7 @@
     translateCopilotPreview();
     translateTooltips();
     translateGitHubEducation();
+    translateExperienceHeaderItems();
     translateFilterMenu();
     translateOpenCopilotMenu();
     translateStarButtons();
