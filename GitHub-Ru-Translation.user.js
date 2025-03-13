@@ -17,7 +17,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B21
+// @version         1-B22
 // ==/UserScript==
 
 (function () {
@@ -239,7 +239,14 @@
         "About this Experience": "О курсе",
         "Take action": "Приступите к выполнению",
         "GitHub flow is a lightweight, branch-based workflow. In this Experience you'll learn the basics of the GitHub Flow including creating and making changes to branches within a repository, as well as creating and merging pull requests. The GitHub flow is useful for everyone, not just developers.": "GitHub Flow — это простой, основанный на ветках рабочий процесс. В этом курсе вы узнаете основы GitHub Flow, включая создание и изменение веток в репозитории, а также создание и принятие запросов на слияние. GitHub Flow полезен для всех, не только для разработчиков.",
-        "In four easy steps, you will create a branch, commit a file to that branch, open a pull request and merge that pull request.": "За четыре простых шага вы создадите ветку, внесёте в неё файл, откроете запрос на слияние и подтвердите его."
+        "In four easy steps, you will create a branch, commit a file to that branch, open a pull request and merge that pull request.": "За четыре простых шага вы создадите ветку, внесёте в неё файл, откроете запрос на слияние и подтвердите его.",
+        "ACTION ITEM": "ЗАДАНИЕ",
+        "Add starred repositories to a list": "Добавьте репозитории, на которые поставили звезду, в список",
+        "Incomplete": "Не выполнено",
+        "List": "Список",
+        "To complete this task, create a list with at least 3 поставил(а) звезду на repos with the list name 'My Repo Watchlist'.": "Чтобы выполнить это задание, создайте список, содержащий не менее трёх репозиториев, на которые вы поставили звезду, с названием «My Repo Watchlist».",
+        "See detailed instructions": "Подробные инструкции",
+        "Mark complete": "Отметить как выполненное"
     };
 
     // УРА, наконец-то рабочий вариант перевода starred
@@ -331,6 +338,51 @@
         // Если элемент находится внутри ячейки с названием каталога, то не переводим
         if (el.closest('.react-directory-filename-column')) return true;
         return false;
+    }
+    
+    // Функция для перевода блока GitHub Education
+    function translateEducationExperience() {
+        document.querySelectorAll('.experience__action-item h3').forEach(el => {
+            if (el.textContent.includes('Add') && el.textContent.includes('repositories to a list')) {
+                el.innerHTML = el.innerHTML.replace(
+                    /Add .* repositories to a list/,
+                    'Добавьте репозитории, на которые поставили звезду, в список'
+                );
+            }
+        });
+        
+        document.querySelectorAll('.experience__action-item p.mt-4.f4').forEach(el => {
+            if (el.textContent.includes('To complete this task, create a list with at least 3')) {
+                el.innerHTML = el.innerHTML.replace(
+                    /To complete this task, create a list with at least 3 .* repos with the list name 'My Repo Watchlist'./,
+                    'Чтобы выполнить это задание, создайте список, содержащий не менее трёх репозиториев, на которые вы поставили звезду, с названием «My Repo Watchlist».'
+                );
+            }
+        });
+        
+        document.querySelectorAll('.experience__actions-items-labels .Label--attention').forEach(el => {
+            if (el.textContent.trim() === 'Incomplete') {
+                el.textContent = 'Не выполнено';
+            }
+        });
+        
+        document.querySelectorAll('.experience__actions-items-labels .Label--secondary').forEach(el => {
+            if (el.textContent.trim() === 'List') {
+                el.textContent = 'Список';
+            }
+        });
+        
+        document.querySelectorAll('.experience__cta .Button--primary .Button-label').forEach(el => {
+            if (el.textContent.trim() === 'See detailed instructions') {
+                el.textContent = 'Подробные инструкции';
+            }
+        });
+        
+        document.querySelectorAll('.experience__cta .Button--secondary .Button-label').forEach(el => {
+            if (el.textContent.trim() === 'Mark complete') {
+                el.textContent = 'Отметить как выполненное';
+            }
+        });
     }
 
     function translateTextContent() {
@@ -809,6 +861,7 @@
         translateTooltips();
         translateGitHubEducation();
         translateExperienceHeaderItems();
+        translateEducationExperience()
         translateFilterMenu();
         translateOpenCopilotMenu();
         translateStarButtons();
@@ -887,6 +940,7 @@
     translateTooltips();
     translateGitHubEducation();
     translateExperienceHeaderItems();
+    translateEducationExperience()
     translateFilterMenu();
     translateOpenCopilotMenu();
     translateStarButtons();
