@@ -1,0 +1,34 @@
+{
+    "manifest_version": 3,
+    "name": "GitHub Russian Translation",
+    "version": "0.22.0",
+    "description": "Переводит сайты GitHub на русский язык",
+    "author": "Deflecta",
+    "homepage_url": "https://github.com/RushanM/GitHub-Russian-Translation",
+    "icons": {
+        "48": "icons/icon48.png",
+        "96": "icons/icon96.png",
+        "128": "icons/icon128.png"
+    },
+    "action": {
+        "default_icon": "icons/icon48.png",
+        "default_title": "Русификатор Гитхаба",
+        "default_popup": "popup/popup.html"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://github.com/*",
+                "*://github.blog/*",
+                "*://education.github.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
