@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/RushanM/GitHub-Russian-Translation/refs/heads/master/%D0%90%D1%81%D1%81%D0%B5%D1%82%D1%8B/%D0%97%D0%BD%D0%B0%D1%87%D0%BE%D0%BA%202025.3.13.22%20160.png" alt="Осьмикот, маскот Гитхаба, в шапке-ушанке" title="Можете нарисовать лучше? Не против принять помочь!">
+<img src="https://raw.githubusercontent.com/RushanM/GitHub-Russian-Translation/refs/heads/master/%D0%90%D1%81%D1%81%D0%B5%D1%82%D1%8B/%D0%97%D0%BD%D0%B0%D1%87%D0%BE%D0%BA%202025.3.13.22%20160.png" alt="Осьмикот, маскот Гитхаба, в шапке-ушанке" title="Можете нарисовать лучше? Не против принять помощь!">
 <h1>Русификатор Гитхаба</h1>
 </div>
 
