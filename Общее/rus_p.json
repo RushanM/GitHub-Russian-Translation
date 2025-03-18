@@ -2,8 +2,17 @@
     "dashboard": {
         "Dashboard": "Главная страница",
         "Type / to search": "Нажмите <kbd class=\"AppHeader-search-kbd\">/</kbd> для поиска",
+        "Command palette": "Палитра команд",
+        "Chat with Copilot": "Поговорить с Копайлотом",
+        "Open Copilot…": "Открыть Копайлота…",
+        "Create new...": "Создание",
+        "Your issues": "Ваши темы",
+        "Your pull requests": "Ваши запросы на слияние",
+        "You have no unread notifications": "У вас нет непрочитанных уведомлений",
+        "You have unread notifications": "У вас есть непрочитанные уведомления",
         "Top repositories": "Лучшие репозитории",
         "Ask Copilot": "Спросить Копайлота",
+        "Send": "Отправить",
         "Learn. Collaborate. Grow.": "Учитесь. Кооперируйтесь. Развивайтесь.",
         "Find a repository…": "Найти репозиторий…",
         "GitHub Education gives you the tools and community support to take on tech challenges and turn them into opportunities. Your future in tech starts here!": "GitHub Education предоставляет инструменты и поддержку сообщества, чтобы вы могли принимать технологические вызовы и превращать их в возможности. Ваше технологическое будущее начинается здесь!",
@@ -68,8 +77,45 @@
         "Copilot": "Копайлот",
         "Chat with Copilot": "Написать Копайлоту",
         "Start a new Copilot thread": "Начать новую беседу с Копайлотом",
-        "Search syntax tips": "Подсказки по синтаксису поиска",
+        "Search syntax tips": "Информация по синтаксису поиска",
         "Give feedback": "Оставить отзыв"
+    },
+    "copilot": {
+        "New conversation": "Новая беседа",
+        "Immersive": "Перейти",
+        "Open with": "Открыть в…",
+        "Settings": "Настройки"
+    },
+    "copilot_openwith": {
+        "CLI": "командной оболочке"
+    },
+    "createnew": {
+        "New repository": "Создать новый репозиторий",
+        "Import repository": "Импортировать репозиторий",
+        "New codespace": "Создать новое кодовое пространство",
+        "New gist": "Создать новый джист",
+        "New organization": "Создать новую организацию",
+        "New project": "Создать новый проект"
+    },
+    "right_sidebar": {
+        "Account switcher": "Переключатель учётных записей",
+        "Your profile": "Ваш профиль",
+        "Your repositories": "Ваши репозитории",
+        "Your Copilot": "Ваш помощник",
+        "Your projects": "Ваши проекты",
+        "Your stars": "Ваши звёзды",
+        "Your gists": "Ваши джисты",
+        "Your organizations": "Ваши организации",
+        "Your enterprises": "Ваши предприятия",
+        "Your sponsors": "Ваши спонсоры",
+        "Try Enterprise": "Попробовать Enterprise",
+        "Free": "Бесплатно",
+        "Feature preview": "Тестируемые возможности",
+        "GitHub Website": "Сайт GitHub",
+        "GitHub Docs": "Документация GitHub",
+        "GitHub Support": "Поддержка GitHub",
+        "GitHub Community": "Сообщество GitHub",
+        "Sign out": "Выйти из учётной записи"
     },
     "settings": {
         "Public profile": "Публичный профиль",
