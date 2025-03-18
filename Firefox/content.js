@@ -51,7 +51,8 @@ function initTranslation() {
         .then(data => {
             // Сохраняем перевод из dashboard для Chat with Copilot
             window.dashboardCopilotTranslation = data.dashboard["Chat with Copilot"];
-
+            // Сохраняем перевод из dashboard для Home
+            window.dashboardHomeTranslation = data.dashboard["Home"];
             translations = Object.assign(
                 {},
                 data.dashboard,
@@ -573,6 +574,15 @@ function initTranslation() {
                 }
             });
         }
+
+        const feedTitleEl = document.querySelector('[data-target="feed-container.feedTitle"]');
+        if (feedTitleEl && window.dashboardHomeTranslation) {
+            feedTitleEl.textContent = window.dashboardHomeTranslation;
+        }
+
+        document.querySelectorAll('#feed-filter-menu summary').forEach(summary => {
+            summary.innerHTML = summary.innerHTML.replace('Filter', translations["Filter"]);
+        });
 
         const observer = new MutationObserver(() => {
             translateTextContent();
