@@ -17,7 +17,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B24
+// @version         1-B25
 // ==/UserScript==
 
 (function () {

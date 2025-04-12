@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "GitHub Russian Translation",
-    "version": "0.24.0",
+    "version": "0.25.0",
     "description": "Переводит сайты GitHub на русский язык",
     "author": "Deflecta",
     "homepage_url": "https://github.com/RushanM/GitHub-Russian-Translation",

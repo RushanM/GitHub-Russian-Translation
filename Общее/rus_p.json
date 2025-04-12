@@ -308,7 +308,9 @@
         "Incomplete": "Не выполнено",
         "List": "Список",
         "To complete this task, create a list with at least 3 поставил(а) звезду на repos with the list name 'My Repo Watchlist'.": "Чтобы выполнить это задание, создайте список, содержащий не менее трёх репозиториев, на которые вы поставили звезду, с названием «My Repo Watchlist».",
-        "See detailed instructions": "Подробные инструкции",
-        "Mark complete": "Отметить как выполненное"
+        "See detailed instructions": "Подробные инструкции",        "Mark complete": "Отметить как выполненное",
+        "Open": "Открыта",
+        "Edit": "Редактировать",
+        "New issue": "Создать новую тему"
     }
 }
