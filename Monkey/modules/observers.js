@@ -264,24 +264,29 @@ const DOMObservers = {
         });
     },
 
-    // Трансформация строки с автором темы из формата «Автор Открыта 4 hours ago» в «Открыта Автор 4 часа назад»
+    // Трансформация строки с автором темы из формата «Автор Открыта 8 hours ago» в «Открыта Автор 8 часов назад»
     transformIssueAuthorStrings: function (translations) {
         document.querySelectorAll('.Box-sc-g0xbh4-0.dqmClk, [data-testid="issue-body-header-author"]').forEach(authorEl => {
+            // Ищем ближайший родительский контейнер с информацией об открытии темы
             const container = authorEl.closest('.ActivityHeader-module__narrowViewportWrapper--Hjl75, .Box-sc-g0xbh4-0.koxHLL');
             if (!container) return;
 
+            // Находим подвал с текстом «Открыта»
             const footer = container.querySelector('.ActivityHeader-module__footer--FVHp7, .Box-sc-g0xbh4-0.bJQcYY');
             if (!footer) return;
 
+            // Находим span с «Открыта» и автором
             const openedSpan = footer.querySelector('span');
             const authorLink = authorEl.querySelector('a[data-testid="issue-body-header-author"], a[href*="/users/"]') || authorEl;
 
-            // Проверка на текст «opened»
-            if (!openedSpan || !openedSpan.textContent.includes('opened')) return;
+            // Проверяем span
+            if (!openedSpan) return;
 
+            // Находим ссылку на время с relative-time
             const timeLink = footer.querySelector('a[data-testid="issue-body-header-link"]');
             if (!timeLink) return;
 
+            // Находим элемент relative-time внутри ссылки
             const relativeTime = timeLink.querySelector('relative-time');
             if (!relativeTime) return;
 
@@ -289,6 +294,9 @@ const DOMObservers = {
             if (footer.getAttribute('data-ru-transformed')) return;
 
             try {
+                // Выводим отладочную информацию
+                console.log('[Русификатор Гитхаба] Найдена строка с автором темы:', openedSpan.textContent);
+
                 // Отмечаем как трансформированное
                 footer.setAttribute('data-ru-transformed', 'true');
 
@@ -296,8 +304,8 @@ const DOMObservers = {
                 // 1. Сохраняем автора
                 const authorClone = authorLink.cloneNode(true);
 
-                // 2. Меняем текст в span на перевод «opened» из файла локализации
-                openedSpan.textContent = translations["opened"] ? translations["opened"] + ' ' : 'Открыта ';
+                // 2. Меняем текст в span на «Открыта»
+                openedSpan.textContent = 'Открыта ';
 
                 // 3. Вставляем автора после слова «Открыта»
                 openedSpan.after(authorClone);
@@ -307,12 +315,14 @@ const DOMObservers = {
 
                 // 5. Трансформируем текст времени
                 const originalTimeText = relativeTime.textContent;
+                console.log('[Русификатор Гитхаба] Оригинальный текст времени:', originalTimeText);
 
                 // Проверяем, содержит ли текст паттерн времени
                 const hoursAgoMatch = originalTimeText.match(/(\d+)\s+hours?\s+ago/);
                 const minutesAgoMatch = originalTimeText.match(/(\d+)\s+minutes?\s+ago/);
                 const daysAgoMatch = originalTimeText.match(/(\d+)\s+days?\s+ago/);
                 const onDateMatch = originalTimeText.match(/on\s+([A-Za-z]+\s+\d+,\s+\d+)/);
+                const inDateMatch = originalTimeText.match(/в\s+([A-Za-z]+\s+\d+,\s+\d+)/);
 
                 if (hoursAgoMatch) {
                     const hours = parseInt(hoursAgoMatch[1], 10);
@@ -328,6 +338,7 @@ const DOMObservers = {
                     }
 
                     relativeTime.textContent = translatedText;
+                    console.log('[Русификатор Гитхаба] Заменено на:', translatedText);
                 } else if (minutesAgoMatch) {
                     const minutes = parseInt(minutesAgoMatch[1], 10);
                     let translatedText;
@@ -354,6 +365,7 @@ const DOMObservers = {
                     }
 
                     relativeTime.textContent = translatedText;
+                    console.log('[Русификатор Гитхаба] Заменено на:', translatedText);
                 } else if (daysAgoMatch) {
                     const days = parseInt(daysAgoMatch[1], 10);
                     let translatedText;
@@ -367,9 +379,10 @@ const DOMObservers = {
                     }
 
                     relativeTime.textContent = translatedText;
-                } else if (onDateMatch) {
-                    // Обрабатываем формат «on Apr 12, 2025»
-                    const dateText = onDateMatch[1];
+                    console.log('[Русификатор Гитхаба] Заменено на:', translatedText);
+                } else if (onDateMatch || inDateMatch) {
+                    // Обрабатываем формат «on Apr 12, 2025» или «в Apr 12, 2025»
+                    const dateText = onDateMatch ? onDateMatch[1] : inDateMatch[1];
                     const monthMapping = {
                         Jan: 'января',
                         Feb: 'февраля',
@@ -395,9 +408,13 @@ const DOMObservers = {
                         const year = dateMatch[3];
                         const monthRu = monthMapping[monthEn] || monthEn;
 
-                        relativeTime.textContent = `в ${day} ${monthRu} ${year}`;
+                        const translatedText = `в ${day} ${monthRu} ${year}`;
+                        relativeTime.textContent = translatedText;
+                        console.log('[Русификатор Гитхаба] Заменено на:', translatedText);
                     } else {
-                        relativeTime.textContent = "в " + dateText;
+                        const translatedText = "в " + dateText;
+                        relativeTime.textContent = translatedText;
+                        console.log('[Русификатор Гитхаба] Заменено на:', translatedText);
                     }
                 }
 
