@@ -95,6 +95,16 @@
         "Show more": "Показать больше",
         "© 2025 GitHub, Inc.": "© компания GitHub, 2025 год"
     },
+    "footer": {
+        "About": "О нас",
+        "Blog": "Блог",
+        "Terms": "Условия",
+        "Privacy": "Конфиденциальность",
+        "Security": "Безопасность",
+        "Status": "Статус",
+        "Do not share my personal information": "Не передавать мои личные данные",
+        "Manage Cookies": "Управление куки"
+    },
     "search": {
         "Owners": "Владельцы",
         "Jump to": "Перейти",
