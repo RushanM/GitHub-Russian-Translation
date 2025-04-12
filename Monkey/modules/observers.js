@@ -49,8 +49,7 @@ const DOMObservers = {
             }
         });
     },
-    
-    // Обработка новых элементов в DOM
+      // Обработка новых элементов в DOM
     handleNewElement: function(element, translations) {
         // Проверяем, не является ли элемент частью исключений
         if (TranslationUtils.isExcludedElement(element)) {
@@ -61,6 +60,9 @@ const DOMObservers = {
         this.processHeaderElements(element, translations);
         this.processModalElements(element, translations);
         this.processTooltips(element, translations);
+        
+        // Трансформируем строки с автором темы
+        this.transformIssueAuthorStrings(translations);
         
         // Переводим текстовые узлы в добавленном элементе
         this.translateTextNodesInElement(element, translations);
@@ -255,6 +257,150 @@ const DOMObservers = {
                 }
                 // Вызываем оригинальную функцию
                 originalTitleSetter.call(this, translatedTitle);
+            }
+        });
+    },
+    
+    // Трансформация строки с автором темы из формата «Автор opened 4 hours ago» в «Открыта Автор 4 часа назад»
+    transformIssueAuthorStrings: function(translations) {
+        // Селектор для контейнеров автора
+        const authorContainers = document.querySelectorAll('.Box-sc-g0xbh4-0.dqmClk, [data-testid="issue-body-header-author"]');
+        
+        authorContainers.forEach(authorEl => {
+            // Ищем ближайший родительский контейнер с информацией об открытии темы
+            const container = authorEl.closest('.ActivityHeader-module__narrowViewportWrapper--Hjl75, .Box-sc-g0xbh4-0.koxHLL');
+            if (!container) return;
+
+            // Находим подвал с текстом «opened» или «Открыта»
+            const footer = container.querySelector('.ActivityHeader-module__footer--FVHp7, .Box-sc-g0xbh4-0.bJQcYY');
+            if (!footer) return;
+
+            // Находим span с «opened» и автором
+            const openedSpan = footer.querySelector('span');
+            const authorLink = authorEl.querySelector('a[data-testid="issue-body-header-author"], a[href*="/users/"]') || authorEl;
+
+            // Проверяем, что span существует и содержит текст «opened» или русскоязычный эквивалент
+            if (!openedSpan || !(openedSpan.textContent.includes('opened') || openedSpan.textContent.includes('Открыта'))) return;
+
+            // Находим ссылку на время с relative-time
+            const timeLink = footer.querySelector('a[data-testid="issue-body-header-link"]');
+            if (!timeLink) return;
+
+            // Находим элемент relative-time внутри ссылки
+            const relativeTime = timeLink.querySelector('relative-time');
+            if (!relativeTime) return;
+
+            // Если уже трансформировано, пропускаем
+            if (footer.getAttribute('data-ru-transformed')) return;
+
+            try {
+                // Отмечаем как трансформированное
+                footer.setAttribute('data-ru-transformed', 'true');
+
+                // Создаём новую структуру
+                // 1. Сохраняем автора
+                const authorClone = authorLink.cloneNode(true);
+
+                // 2. Меняем текст в span на перевод «opened» из файла локализации или используем «Открыта»
+                openedSpan.textContent = translations["opened"] ? translations["opened"] + ' ' : 'Открыта ';
+
+                // 3. Вставляем автора после слова «Открыта»
+                openedSpan.after(authorClone);
+
+                // 4. Добавляем пробел между автором и временем
+                authorClone.after(document.createTextNode(' '));
+
+                // 5. Трансформируем текст времени
+                const originalTimeText = relativeTime.textContent;
+
+                // Проверяем форматы времени
+                const hoursAgoMatch = originalTimeText.match(/(\d+)\s+hours?\s+ago/);
+                const minutesAgoMatch = originalTimeText.match(/(\d+)\s+minutes?\s+ago/);
+                const onDateMatch = originalTimeText.match(/on\s+([A-Za-z]+\s+\d+,\s+\d+)/);
+                const inDateMatch = originalTimeText.match(/в\s+([A-Za-z]+\s+\d+,\s+\d+)/);
+
+                if (hoursAgoMatch) {
+                    const hours = parseInt(hoursAgoMatch[1], 10);
+                    let translatedText;
+
+                    // Правильное склонение часов
+                    if (hours === 1) {
+                        translatedText = "1 час назад";
+                    } else if (hours >= 2 && hours <= 4) {
+                        translatedText = hours + " часа назад";
+                    } else {
+                        translatedText = hours + " часов назад";
+                    }
+
+                    relativeTime.textContent = translatedText;
+                } else if (minutesAgoMatch) {
+                    const minutes = parseInt(minutesAgoMatch[1], 10);
+                    let translatedText;
+
+                    // Правильное склонение минут
+                    if (minutes === 1) {
+                        translatedText = "1 минуту назад";
+                    } else if (minutes >= 2 && minutes <= 4) {
+                        translatedText = minutes + " минуты назад";
+                    } else if (minutes >= 5 && minutes <= 20) {
+                        translatedText = minutes + " минут назад";
+                    } else {
+                        // Для чисел 21, 31, 41… используем окончание как для 1
+                        const lastDigit = minutes % 10;
+                        const lastTwoDigits = minutes % 100;
+
+                        if (lastDigit === 1 && lastTwoDigits !== 11) {
+                            translatedText = minutes + " минуту назад";
+                        } else if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits > 20)) {
+                            translatedText = minutes + " минуты назад";
+                        } else {
+                            translatedText = minutes + " минут назад";
+                        }
+                    }
+
+                    relativeTime.textContent = translatedText;
+                } else if (onDateMatch || inDateMatch) {
+                    // Обрабатываем формат «on Apr 12, 2025» или «в Apr 12, 2025»
+                    const dateText = onDateMatch ? onDateMatch[1] : inDateMatch[1];
+                    const monthMapping = {
+                        Jan: 'января',
+                        Feb: 'февраля',
+                        Mar: 'марта',
+                        Apr: 'апреля',
+                        May: 'мая',
+                        Jun: 'июня',
+                        Jul: 'июля',
+                        Aug: 'августа',
+                        Sep: 'сентября',
+                        Oct: 'октября',
+                        Nov: 'ноября',
+                        Dec: 'декабря'
+                    };
+
+                    // Регулярное выражение для поиска и замены месяца в строке даты
+                    const monthRegex = /([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})/;
+                    const dateMatch = dateText.match(monthRegex);
+
+                    if (dateMatch) {
+                        const monthEn = dateMatch[1];
+                        const day = dateMatch[2];
+                        const year = dateMatch[3];
+                        const monthRu = monthMapping[monthEn] || monthEn;
+
+                        relativeTime.textContent = `в ${day} ${monthRu} ${year}`;
+                    } else {
+                        relativeTime.textContent = "в " + dateText;
+                    }
+                }
+
+                // 6. Скрываем оригинальный контейнер с автором
+                if (authorEl !== authorLink) {
+                    authorEl.style.cssText = 'display: none !important;';
+                }
+
+                console.log('[Русификатор Гитхаба] Строка с автором задачи трансформирована');
+            } catch (error) {
+                console.error('[Русификатор Гитхаба] Ошибка при трансформации строки с автором:', error);
             }
         });
     }
