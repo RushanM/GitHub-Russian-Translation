@@ -17,7 +17,7 @@
 // @namespace       githubrutraslation
 // @supportURL      https://github.com/RushanM/GitHub-Russian-Translation/issues
 // @updateURL       https://github.com/RushanM/GitHub-Russian-Translation/raw/main/GitHub%20Ru%20Translation.user.js
-// @version         1-B25
+// @version         1-B26
 // ==/UserScript==
 
 (function () {
@@ -561,6 +561,128 @@
             });
         }
 
+        // Функция для перевода статусов тем, кнопок редактирования и создания тем
+        function translateIssueElements() {
+            // Перевод статуса «Open» в темах
+            document.querySelectorAll('span[data-testid="header-state"]').forEach(el => {
+                if (el.textContent.trim() === 'Open' && translations['Open']) {
+                    // Сохраняем SVG-значок
+                    const svg = el.querySelector('svg');
+                    const svgHTML = svg ? svg.outerHTML : '';
+                    
+                    // Заменяем текст, сохраняя значок
+                    el.innerHTML = svgHTML + translations['Open'];
+                }
+                // Перевод статуса «Closed» в темах
+                else if (el.textContent.trim() === 'Closed' && translations['Closed']) {
+                    // Сохраняем SVG-значок
+                    const svg = el.querySelector('svg');
+                    const svgHTML = svg ? svg.outerHTML : '';
+                    
+                    // Заменяем текст, сохраняя значок
+                    el.innerHTML = svgHTML + translations['Closed'];
+                }
+            });
+            
+            // Перевод кнопки «Edit»
+            document.querySelectorAll('.prc-Button-ButtonBase-c50BI .prc-Button-Label-pTQ3x').forEach(el => {
+                if (el.textContent.trim() === 'Edit' && translations['Edit']) {
+                    el.textContent = translations['Edit'];
+                }
+            });
+            
+            // Перевод кнопки «New issue»
+            document.querySelectorAll('.prc-Button-ButtonBase-c50BI .prc-Button-Label-pTQ3x').forEach(el => {
+                if (el.textContent.trim() === 'New issue' && translations['New issue']) {
+                    el.textContent = translations['New issue'];
+                }
+            });
+            // Трансформация строки вида «Пользователь opened 2 hours ago» в «Открыта Пользователь 2 часа назад»
+            document.querySelectorAll('.Box-sc-g0xbh4-0.dqmClk, [data-testid="issue-body-header-author"]').forEach(authorEl => {
+                // Ищем ближайший родительский контейнер, который содержит также подвал с «opened»
+                const container = authorEl.closest('.ActivityHeader-module__narrowViewportWrapper--Hjl75, .Box-sc-g0xbh4-0.koxHLL');
+                if (!container) return;
+                
+                // Находим подвал с текстом «opened»
+                const footer = container.querySelector('.ActivityHeader-module__footer--FVHp7, .Box-sc-g0xbh4-0.bJQcYY');
+                if (!footer) return;
+                
+                // Находим span с «opened» и автором
+                const openedSpan = footer.querySelector('span');
+                const authorLink = authorEl.querySelector('a[data-testid="issue-body-header-author"], a[href*="/users/"]') || authorEl;
+                
+                // Проверяем, что span содержит «opened»
+                if (!openedSpan || !openedSpan.textContent.includes('opened')) return;
+                
+                // Получаем ссылку на время с relative-time
+                const timeLink = footer.querySelector('a[data-testid="issue-body-header-link"]');
+                if (!timeLink) return;
+                
+                // Находим элемент relative-time внутри ссылки
+                const relativeTime = timeLink.querySelector('relative-time');
+                if (!relativeTime) return;
+                
+                try {
+                    // Если уже трансформировано, пропускаем
+                    if (footer.getAttribute('data-ru-transformed')) return;
+                    
+                    // Отмечаем как трансформированное
+                    footer.setAttribute('data-ru-transformed', 'true');
+                    
+                    // Создаём новую структуру
+                    // 1. Сохраняем автора
+                    const authorClone = authorLink.cloneNode(true);
+                    
+                    // 2. Меняем текст в span на перевод «opened» из файла локализации
+                    openedSpan.textContent = translations["opened"] ? translations["opened"] + ' ' : 'Открыта ';
+                    
+                    // 3. Вставляем автора после слова «Открыта»
+                    openedSpan.after(authorClone);
+                    
+                    // 4. Добавляем пробел между автором и временем
+                    authorClone.after(document.createTextNode(' '));
+                    
+                    // 5. Трансформируем текст времени
+                    const originalTimeText = relativeTime.textContent;
+                    
+                    // Проверяем, содержит ли текст паттерн времени (например, «3 hours ago» или «on Apr 12, 2025»)
+                    const hoursAgoMatch = originalTimeText.match(/(\d+)\s+hours?\s+ago/);
+                    const onDateMatch = originalTimeText.match(/on\s+([A-Za-z]+\s+\d+,\s+\d+)/);
+                    
+                    if (hoursAgoMatch) {
+                        const hours = parseInt(hoursAgoMatch[1], 10);
+                        let translatedText;
+                        
+                        // Используем правильную форму в зависимости от числа
+                        if (hours === 1) {
+                            translatedText = translations["hours ago"] || "час назад";
+                        } else if (hours >= 2 && hours <= 4) {
+                            translatedText = hours + " " + (translations["hours ago 2"] || "часа назад");
+                        } else {
+                            translatedText = hours + " " + (translations["hours ago 5"] || "часов назад");
+                        }
+                        
+                        relativeTime.textContent = translatedText;
+                    } else if (onDateMatch) {
+                        // Обрабатываем формат «on Apr 12, 2025»
+                        relativeTime.textContent = relativeTime.textContent.replace(
+                            /^on\s+/,
+                            translations["on"] ? translations["on"] + " " : "в "
+                        );
+                    }
+                    
+                    // 6. Скрываем оригинальный контейнер с автором
+                    if (authorEl !== authorLink) {
+                        authorEl.style.cssText = 'display: none !important;';
+                    }
+                    
+                    console.log('[Русификатор Гитхаба] Cтрока с автором темы трансформирована');
+                } catch (error) {
+                    console.error('[Русификатор Гитхаба] Ошибка при трансформации строки с автором:', error);
+                }
+            });
+        }
+
         const feedTitleEl = document.querySelector('[data-target="feed-container.feedTitle"]');
         if (feedTitleEl && window.dashboardHomeTranslation) {
             feedTitleEl.textContent = window.dashboardHomeTranslation;
@@ -583,6 +705,7 @@
             translateStarButtons();
             translateRepositoryButtons();
             translateLabelElements();
+            translateIssueElements();
 
             // Перевод подвала
             document.querySelectorAll('p.color-fg-subtle.text-small.text-light').forEach(node => {
@@ -676,6 +799,7 @@
         translateOpenCopilotMenu();
         translateStarButtons();
         translateRepositoryButtons();
+        translateIssueElements();
 
         // Замена «Filter»
         document.querySelectorAll('summary .octicon-filter').forEach(icon => {

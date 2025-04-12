@@ -310,7 +310,13 @@
         "To complete this task, create a list with at least 3 поставил(а) звезду на repos with the list name 'My Repo Watchlist'.": "Чтобы выполнить это задание, создайте список, содержащий не менее трёх репозиториев, на которые вы поставили звезду, с названием «My Repo Watchlist».",
         "See detailed instructions": "Подробные инструкции",        "Mark complete": "Отметить как выполненное",
         "Open": "Открыта",
+        "Closed": "Закрыта",
         "Edit": "Редактировать",
-        "New issue": "Создать новую тему"
+        "New issue": "Создать новую тему",
+        "opened": "Открыта",
+        "hours ago": "час назад",
+        "hours ago 2": "часа назад",
+        "hours ago 5": "часов назад",
+        "on": "в"
     }
 }
