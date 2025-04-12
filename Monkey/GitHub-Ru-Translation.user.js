@@ -260,8 +260,10 @@
                             }
                         });
                         // Последный выхват строчек
-                        if (/\bstarred\b/.test(el.innerHTML)) {
-                            el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, translations["starred"]);
+                        if (/\bstarred\b/.test(el.innerHTML) && !el.innerHTML.includes('starred-button-icon')) {
+                            el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, function(match) {
+                                return translations["starred"];
+                            });
                         }
                         if (/\badded a repository to\b/.test(el.innerHTML)) {
                             el.innerHTML = el.innerHTML.replace(/\badded a repository to\b/g, translations['added a repository to']);
