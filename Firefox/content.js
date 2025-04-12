@@ -90,8 +90,8 @@ function initTranslation() {
         // Функция для перевода абсолютного времени во всплывающей подсказке, например:
         // «Feb 24, 2025, 3:09 PM GMT+3» → «24 февраля 2025, 15:09 по московскому времени»
         function translateAbsoluteTime(text) {
-            // Маппирование месяцев
-            const monthMapping = {
+            // Маппирование месяцев берём из файла с переводами
+            const monthMapping = translations.months || {
                 Jan: 'января',
                 Feb: 'февраля',
                 Mar: 'марта',
@@ -127,7 +127,10 @@ function initTranslation() {
                 // Форматирование часов с ведущим нулём
                 const hourStr = hour < 10 ? '0' + hour : hour.toString();
                 const monthRu = monthMapping[monthEn] || monthEn;
-                return `${day} ${monthRu} ${year}, ${hourStr}:${minute} по московскому времени`;
+
+                // Используем перевод из файла переводов
+                const byMoscowTime = translations.time?.by_moscow_time || "по московскому времени";
+                return `${day} ${monthRu} ${year}, ${hourStr}:${minute} ${byMoscowTime}`;
             }
             return text;
         }
@@ -136,14 +139,347 @@ function initTranslation() {
         function translateRelativeTimes() {
             const timeElements = document.querySelectorAll('relative-time');
             timeElements.forEach(el => {
-                // Если элемент уже переведён, можно добавить атрибут data-translated
-                if (el.getAttribute('data-translated')) return;
+                // Если элемент уже переведён в основном DOM, проверяем его теневой DOM
+                if (el.getAttribute('data-translated')) {
+                    // Проверяем наличие теневого корня и пытаемся перевести его содержимое
+                    if (el.shadowRoot) {
+                        // Получаем текстовые узлы из теневого корня
+                        const shadowTextNodes = [];
+
+                        // Функция для рекурсивного обхода теневого DOM
+                        function collectTextNodes(node) {
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                shadowTextNodes.push(node);
+                            } else if (node.childNodes) {
+                                node.childNodes.forEach(childNode => {
+                                    collectTextNodes(childNode);
+                                });
+                            }
+                        }
+                        // Обходим теневой DOM
+                        collectTextNodes(el.shadowRoot);
+
+                        // Переводим каждый текстовый узел
+                        shadowTextNodes.forEach(textNode => {
+                            const originalText = textNode.textContent.trim();
+                            // Ищем паттерны времени
+                            const hoursAgoMatch = originalText.match(/(\d+)\s+hours?\s+ago/);
+                            const minutesAgoMatch = originalText.match(/(\d+)\s+minutes?\s+ago/);
+                            const daysAgoMatch = originalText.match(/(\d+)\s+days?\s+ago/);
+                            const weeksAgoMatch = originalText.match(/(\d+)\s+weeks?\s+ago/);
+                            const lastWeekMatch = originalText.match(/last\s+week/i);
+                            const yesterdayMatch = originalText.match(/yesterday/i);
+                            const dateMatch = originalText.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})/i);
+                            const shortDateMatch = originalText.match(/on\s+([A-Za-z]{3})\s+(\d{1,2})/i);
+
+                            if (hoursAgoMatch) {
+                                const hours = parseInt(hoursAgoMatch[1], 10);
+                                let translatedText;
+
+                                // Правильное склонение
+                                if (hours === 1) {
+                                    translatedText = translations.time?.hour_singular || "1 час назад";
+                                } else if (hours >= 2 && hours <= 4) {
+                                    translatedText = (translations.time?.hour_few || "{count} часа назад").replace("{count}", hours);
+                                } else {
+                                    translatedText = (translations.time?.hour_many || "{count} часов назад").replace("{count}", hours);
+                                }
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /(\d+)\s+hours?\s+ago/,
+                                    translatedText
+                                );
+                            } else if (daysAgoMatch) {
+                                const days = parseInt(daysAgoMatch[1], 10);
+                                let translatedText;
+
+                                // Правильное склонение
+                                if (days === 1) {
+                                    translatedText = translations.time?.day_singular || "1 день назад";
+                                } else if (days >= 2 && days <= 4) {
+                                    translatedText = (translations.time?.day_few || "{count} дня назад").replace("{count}", days);
+                                } else {
+                                    translatedText = (translations.time?.day_many || "{count} дней назад").replace("{count}", days);
+                                }
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /(\d+)\s+days?\s+ago/,
+                                    translatedText
+                                );
+                            } else if (weeksAgoMatch) {
+                                const weeks = parseInt(weeksAgoMatch[1], 10);
+                                let translatedText;
+
+                                // Правильное склонение
+                                if (weeks === 1) {
+                                    translatedText = translations.time?.week_singular || "1 неделю назад";
+                                } else if (weeks >= 2 && weeks <= 4) {
+                                    translatedText = (translations.time?.week_few || "{count} недели назад").replace("{count}", weeks);
+                                } else {
+                                    translatedText = (translations.time?.week_many || "{count} недель назад").replace("{count}", weeks);
+                                }
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /(\d+)\s+weeks?\s+ago/,
+                                    translatedText
+                                );
+                            } else if (lastWeekMatch) {
+                                textNode.textContent = textNode.textContent.replace(
+                                    /last\s+week/i,
+                                    translations.time?.last_week || "на прошлой неделе"
+                                );
+                            } else if (yesterdayMatch) {
+                                textNode.textContent = textNode.textContent.replace(
+                                    /yesterday/i,
+                                    translations.time?.yesterday || "вчера"
+                                );
+                            } else if (shortDateMatch) {
+                                // Обработка формата «on Mar 13»
+                                const monthEn = shortDateMatch[1];
+                                const day = shortDateMatch[2];
+
+                                // Используем словарь месяцев из файла переводов
+                                const monthRu = translations.months?.[monthEn] || monthEn;
+                                const translatedDate = `${day} ${monthRu}`;
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /on\s+[A-Za-z]{3}\s+\d{1,2}/i,
+                                    `${day} ${monthRu}`
+                                );
+                            } else if (dateMatch) {
+                                // Если у нас полная дата в формате «April 11, 2025 10:27»
+                                const monthEn = dateMatch[1];
+                                const day = dateMatch[2];
+                                const year = dateMatch[3];
+                                const hour = dateMatch[4];
+                                const minute = dateMatch[5];
+
+                                // Используем словарь месяцев из файла переводов
+                                const monthRu = translations.months?.[monthEn] || monthEn;
+                                const translatedDate = `${day} ${monthRu} ${year} ${hour}:${minute}`;
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /[A-Za-z]+\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}/i,
+                                    translatedDate
+                                );
+                            } else if (minutesAgoMatch) {
+                                const minutes = parseInt(minutesAgoMatch[1], 10);
+                                let translatedText;
+
+                                // Правильное склонение
+                                if (minutes === 1) {
+                                    translatedText = translations.time?.minute_singular || "1 минуту назад";
+                                } else if (minutes >= 2 && minutes <= 4) {
+                                    translatedText = (translations.time?.minute_few || "{count} минуты назад").replace("{count}", minutes);
+                                } else if (minutes >= 5 && minutes <= 20) {
+                                    translatedText = (translations.time?.minute_many || "{count} минут назад").replace("{count}", minutes);
+                                } else {
+                                    // Для чисел 21, 31, 41… используем окончание как для 1
+                                    const lastDigit = minutes % 10;
+                                    const lastTwoDigits = minutes % 100;
+
+                                    if (lastDigit === 1 && lastTwoDigits !== 11) {
+                                        translatedText = (translations.time?.minute_singular || "1 минуту назад").replace("1", minutes);
+                                    } else if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits > 20)) {
+                                        translatedText = (translations.time?.minute_few || "{count} минуты назад").replace("{count}", minutes);
+                                    } else {
+                                        translatedText = (translations.time?.minute_many || "{count} минут назад").replace("{count}", minutes);
+                                    }
+                                }
+
+                                textNode.textContent = textNode.textContent.replace(
+                                    /(\d+)\s+minutes?\s+ago/,
+                                    translatedText
+                                );
+                            }
+                        });
+                    }
+                    return;
+                }
 
                 // Перевод всплывающей подсказки, если атрибут title существует
                 if (el.hasAttribute('title')) {
                     const originalTitle = el.getAttribute('title');
                     el.setAttribute('title', translateAbsoluteTime(originalTitle));
                 }
+
+                // Обработка текста даты/времени внутри элемента 
+                const originalText = el.textContent.trim();
+
+                // Обработка относительного времени «x hours ago», «x minutes ago» и т. д.
+                const hoursAgoMatch = originalText.match(/(\d+)\s+hours?\s+ago/);
+                const minutesAgoMatch = originalText.match(/(\d+)\s+minutes?\s+ago/);
+                const onDateMatch = originalText.match(/on\s+([A-Za-z]+\s+\d+,\s+\d+)/);
+
+                if (hoursAgoMatch) {
+                    const hours = parseInt(hoursAgoMatch[1], 10);
+                    let translatedText;
+
+                    // Правильное склонение
+                    if (hours === 1) {
+                        translatedText = "1 час назад";
+                    } else if (hours >= 2 && hours <= 4) {
+                        translatedText = hours + " часа назад";
+                    } else {
+                        translatedText = hours + " часов назад";
+                    }
+
+                    el.textContent = translatedText;
+                } else if (minutesAgoMatch) {
+                    const minutes = parseInt(minutesAgoMatch[1], 10);
+                    let translatedText;
+
+                    // Правильное склонение
+                    if (minutes === 1) {
+                        translatedText = "1 минуту назад";
+                    } else if (minutes >= 2 && minutes <= 4) {
+                        translatedText = minutes + " минуты назад";
+                    } else if (minutes >= 5 && minutes <= 20) {
+                        translatedText = minutes + " минут назад";
+                    } else {
+                        // Для чисел 21, 31, 41… используем окончание как для 1
+                        const lastDigit = minutes % 10;
+                        const lastTwoDigits = minutes % 100;
+
+                        if (lastDigit === 1 && lastTwoDigits !== 11) {
+                            translatedText = minutes + " минуту назад";
+                        } else if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits > 20)) {
+                            translatedText = minutes + " минуты назад";
+                        } else {
+                            translatedText = minutes + " минут назад";
+                        }
+                    }
+
+                    el.textContent = translatedText;
+                } else if (onDateMatch) {
+                    // Обрабатываем формат «on Apr 12, 2025»
+                    // Переводим английское название месяца на русский
+                    const dateText = onDateMatch[1];
+                    const monthMapping = {
+                        Jan: 'января',
+                        Feb: 'февраля',
+                        Mar: 'марта',
+                        Apr: 'апреля',
+                        May: 'мая',
+                        Jun: 'июня',
+                        Jul: 'июля',
+                        Aug: 'августа',
+                        Sep: 'сентября',
+                        Oct: 'октября',
+                        Nov: 'ноября',
+                        Dec: 'декабря'
+                    };
+
+                    // Регулярное выражение для поиска и замены месяца в строке даты
+                    const monthRegex = /([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})/;
+                    const dateMatch = dateText.match(monthRegex);
+
+                    if (dateMatch) {
+                        const monthEn = dateMatch[1];
+                        const day = dateMatch[2];
+                        const year = dateMatch[3];
+                        const monthRu = monthMapping[monthEn] || monthEn;
+
+                        el.textContent = `в ${day} ${monthRu} ${year}`;
+                    } else {
+                        el.textContent = "в " + dateText;
+                    }
+                }
+
+                // Пробуем перехватывать события мутации теневого корня
+                if (window.ShadowRoot && !el.getAttribute('data-shadow-observed')) {
+                    try {
+                        // Пытаемся получить доступ к теневому DOM
+                        const shadowRoot = el.shadowRoot;
+                        if (shadowRoot) {
+                            // Добавляем наблюдатель за изменениями в теневом DOM
+                            const shadowObserver = new MutationObserver((mutations) => {
+                                mutations.forEach(mutation => {
+                                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                                        // Проходим по всем текстовым узлам в теневом DOM
+                                        const textNodes = [];
+                                        const walk = document.createTreeWalker(shadowRoot, NodeFilter.SHOW_TEXT);
+
+                                        let node;
+                                        while (node = walk.nextNode()) {
+                                            textNodes.push(node);
+                                        }
+
+                                        textNodes.forEach(textNode => {
+                                            const originalText = textNode.textContent;
+                                            // Ищем паттерны времени
+                                            if (originalText.match(/(\d+)\s+hours?\s+ago/)) {
+                                                const hours = parseInt(originalText.match(/(\d+)\s+hours?\s+ago/)[1], 10);
+                                                let translatedText;
+                                                // Правильное склонение
+                                                if (hours === 1) {
+                                                    translatedText = translations.time?.hour_singular || "1 час назад";
+                                                } else if (hours >= 2 && hours <= 4) {
+                                                    translatedText = (translations.time?.hour_few || "{count} часа назад").replace("{count}", hours);
+                                                } else {
+                                                    translatedText = (translations.time?.hour_many || "{count} часов назад").replace("{count}", hours);
+                                                }
+
+                                                textNode.textContent = translatedText;
+                                            } else if (originalText.match(/(\d+)\s+days?\s+ago/)) {
+                                                const days = parseInt(originalText.match(/(\d+)\s+days?\s+ago/)[1], 10);
+                                                let translatedText;
+
+                                                // Правильное склонение для русского языка
+                                                if (days === 1) {
+                                                    translatedText = translations.time?.day_singular || "1 день назад";
+                                                } else if (days >= 2 && days <= 4) {
+                                                    translatedText = (translations.time?.day_few || "{count} дня назад").replace("{count}", days);
+                                                } else {
+                                                    translatedText = (translations.time?.day_many || "{count} дней назад").replace("{count}", days);
+                                                }
+
+                                                textNode.textContent = translatedText;
+                                            } else if (originalText.match(/yesterday/i)) {
+                                                textNode.textContent = translations.time?.yesterday || "вчера";
+                                            } else if (originalText.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})/i)) {
+                                                const match = originalText.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2})/i); const monthEn = match[1];
+                                                const day = match[2];
+                                                const year = match[3];
+                                                const hour = match[4];
+                                                const minute = match[5];
+
+                                                // Используем словарь месяцев из файла переводов
+                                                const monthRu = translations.months?.[monthEn] || monthEn;
+                                                textNode.textContent = `${day} ${monthRu} ${year} ${hour}:${minute}`;
+                                            } else if (originalText.match(/(\d+)\s+minutes?\s+ago/)) {
+                                                const minutes = parseInt(originalText.match(/(\d+)\s+minutes?\s+ago/)[1], 10);
+                                                let translatedText;
+
+                                                // Правильное склонение
+                                                if (minutes === 1) {
+                                                    translatedText = translations.time?.minute_singular || "1 минуту назад";
+                                                } else if (minutes >= 2 && minutes <= 4) {
+                                                    translatedText = (translations.time?.minute_few || "{count} минуты назад").replace("{count}", minutes);
+                                                } else {
+                                                    translatedText = (translations.time?.minute_many || "{count} минут назад").replace("{count}", minutes);
+                                                }
+
+                                                textNode.textContent = translatedText;
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+
+                            shadowObserver.observe(shadowRoot, {
+                                childList: true,
+                                characterData: true,
+                                subtree: true
+                            });
+
+                            el.setAttribute('data-shadow-observed', 'true');
+                        }
+                    } catch (error) {
+                        console.error('[Русификатор Гитхаба] Ошибка при работе с теневым DOM:', error);
+                    }
+                }
+
                 // Отмечаем элемент как переведённый
                 el.setAttribute('data-translated', 'true');
             });
@@ -277,7 +613,7 @@ function initTranslation() {
                         });
                         // Последный выхват строчек
                         if (/\bstarred\b/.test(el.innerHTML) && !el.innerHTML.includes('starred-button-icon')) {
-                            el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, function(match) {
+                            el.innerHTML = el.innerHTML.replace(/\bstarred\b/g, function (match) {
                                 return translations["starred"];
                             });
                         }
@@ -585,7 +921,7 @@ function initTranslation() {
                     // Сохраняем SVG-значок
                     const svg = el.querySelector('svg');
                     const svgHTML = svg ? svg.outerHTML : '';
-                    
+
                     // Заменяем текст, сохраняя значок
                     el.innerHTML = svgHTML + translations['Open'];
                 }
@@ -594,19 +930,19 @@ function initTranslation() {
                     // Сохраняем SVG-значок
                     const svg = el.querySelector('svg');
                     const svgHTML = svg ? svg.outerHTML : '';
-                    
+
                     // Заменяем текст, сохраняя значок
                     el.innerHTML = svgHTML + translations['Closed'];
                 }
             });
-            
+
             // Перевод кнопки «Edit»
             document.querySelectorAll('.prc-Button-ButtonBase-c50BI .prc-Button-Label-pTQ3x').forEach(el => {
                 if (el.textContent.trim() === 'Edit' && translations['Edit']) {
                     el.textContent = translations['Edit'];
                 }
             });
-            
+
             // Перевод кнопки «New issue»
             document.querySelectorAll('.prc-Button-ButtonBase-c50BI .prc-Button-Label-pTQ3x').forEach(el => {
                 if (el.textContent.trim() === 'New issue' && translations['New issue']) {
@@ -618,80 +954,134 @@ function initTranslation() {
                 // Ищем ближайший родительский контейнер, который содержит также подвал с «opened»
                 const container = authorEl.closest('.ActivityHeader-module__narrowViewportWrapper--Hjl75, .Box-sc-g0xbh4-0.koxHLL');
                 if (!container) return;
-                
+
                 // Находим подвал с текстом «opened»
                 const footer = container.querySelector('.ActivityHeader-module__footer--FVHp7, .Box-sc-g0xbh4-0.bJQcYY');
                 if (!footer) return;
-                
+
                 // Находим span с «opened» и автором
                 const openedSpan = footer.querySelector('span');
                 const authorLink = authorEl.querySelector('a[data-testid="issue-body-header-author"], a[href*="/users/"]') || authorEl;
-                
+
                 // Проверяем, что span содержит «opened»
                 if (!openedSpan || !openedSpan.textContent.includes('opened')) return;
-                
+
                 // Получаем ссылку на время с relative-time
                 const timeLink = footer.querySelector('a[data-testid="issue-body-header-link"]');
                 if (!timeLink) return;
-                
+
                 // Находим элемент relative-time внутри ссылки
                 const relativeTime = timeLink.querySelector('relative-time');
                 if (!relativeTime) return;
-                
+
                 try {
                     // Если уже трансформировано, пропускаем
                     if (footer.getAttribute('data-ru-transformed')) return;
-                    
+
                     // Отмечаем как трансформированное
                     footer.setAttribute('data-ru-transformed', 'true');
-                    
+
                     // Создаём новую структуру
                     // 1. Сохраняем автора
                     const authorClone = authorLink.cloneNode(true);
-                    
+
                     // 2. Меняем текст в span на перевод «opened» из файла локализации
                     openedSpan.textContent = translations["opened"] ? translations["opened"] + ' ' : 'Открыта ';
-                    
+
                     // 3. Вставляем автора после слова «Открыта»
                     openedSpan.after(authorClone);
-                    
+
                     // 4. Добавляем пробел между автором и временем
                     authorClone.after(document.createTextNode(' '));
-                    
+
                     // 5. Трансформируем текст времени
                     const originalTimeText = relativeTime.textContent;
-                    
+
                     // Проверяем, содержит ли текст паттерн времени (например, «3 hours ago» или «on Apr 12, 2025»)
                     const hoursAgoMatch = originalTimeText.match(/(\d+)\s+hours?\s+ago/);
+                    const minutesAgoMatch = originalTimeText.match(/(\d+)\s+minutes?\s+ago/);
                     const onDateMatch = originalTimeText.match(/on\s+([A-Za-z]+\s+\d+,\s+\d+)/);
-                    
+
                     if (hoursAgoMatch) {
                         const hours = parseInt(hoursAgoMatch[1], 10);
                         let translatedText;
-                        
-                        // Используем правильную форму в зависимости от числа
+
+                        // Правильное склонение
                         if (hours === 1) {
-                            translatedText = translations["hours ago"] || "час назад";
+                            translatedText = "Час назад";
                         } else if (hours >= 2 && hours <= 4) {
-                            translatedText = hours + " " + (translations["hours ago 2"] || "часа назад");
+                            translatedText = hours + " часа назад";
                         } else {
-                            translatedText = hours + " " + (translations["hours ago 5"] || "часов назад");
+                            translatedText = hours + " часов назад";
                         }
-                        
+
+                        relativeTime.textContent = translatedText;
+                    } else if (minutesAgoMatch) {
+                        const minutes = parseInt(minutesAgoMatch[1], 10);
+                        let translatedText;
+
+                        // Правильное склонение
+                        if (minutes === 1) {
+                            translatedText = "1 минуту назад";
+                        } else if (minutes >= 2 && minutes <= 4) {
+                            translatedText = minutes + " минуты назад";
+                        } else if (minutes >= 5 && minutes <= 20) {
+                            translatedText = minutes + " минут назад";
+                        } else {
+                            // Для чисел 21, 31, 41… используем окончание как для 1
+                            const lastDigit = minutes % 10;
+                            const lastTwoDigits = minutes % 100;
+
+                            if (lastDigit === 1 && lastTwoDigits !== 11) {
+                                translatedText = minutes + " минуту назад";
+                            } else if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits > 20)) {
+                                translatedText = minutes + " минуты назад";
+                            } else {
+                                translatedText = minutes + " минут назад";
+                            }
+                        }
+
                         relativeTime.textContent = translatedText;
                     } else if (onDateMatch) {
                         // Обрабатываем формат «on Apr 12, 2025»
-                        relativeTime.textContent = relativeTime.textContent.replace(
-                            /^on\s+/,
-                            translations["on"] ? translations["on"] + " " : "в "
-                        );
+                        // Переводим английское название месяца на русский
+                        const dateText = onDateMatch[1];
+                        const monthMapping = {
+                            Jan: 'января',
+                            Feb: 'февраля',
+                            Mar: 'марта',
+                            Apr: 'апреля',
+                            May: 'мая',
+                            Jun: 'июня',
+                            Jul: 'июля',
+                            Aug: 'августа',
+                            Sep: 'сентября',
+                            Oct: 'октября',
+                            Nov: 'ноября',
+                            Dec: 'декабря'
+                        };
+
+                        // Регулярное выражение для поиска и замены месяца в строке даты
+                        const monthRegex = /([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})/;
+                        const dateMatch = dateText.match(monthRegex);
+
+                        if (dateMatch) {
+                            const monthEn = dateMatch[1];
+                            const day = dateMatch[2];
+                            const year = dateMatch[3];
+                            const monthRu = monthMapping[monthEn] || monthEn;
+
+                            relativeTime.textContent = `в ${day} ${monthRu} ${year}`;
+                        } else {
+                            relativeTime.textContent = "в " + dateText;
+                        }
                     }
-                    
+
                     // 6. Скрываем оригинальный контейнер с автором
                     if (authorEl !== authorLink) {
                         authorEl.style.cssText = 'display: none !important;';
                     }
-                    
+
                     console.log('[Русификатор Гитхаба] Cтрока с автором темы трансформирована');
                 } catch (error) {
                     console.error('[Русификатор Гитхаба] Ошибка при трансформации строки с автором:', error);
