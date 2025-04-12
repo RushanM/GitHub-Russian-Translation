@@ -47,5 +47,13 @@
             // Запускаем перевод и наблюдение за DOM
             GitHubTranslator.init(translations);
             DOMObservers.startObserving(translations);
+            
+            // Вызываем трансформацию строк с автором темы при загрузке страницы
+            DOMObservers.transformIssueAuthorStrings(translations);
+            
+            // Устанавливаем интервал для периодической проверки новых строк с автором
+            setInterval(() => {
+                DOMObservers.transformIssueAuthorStrings(translations);
+            }, 2000);
         });
 })();

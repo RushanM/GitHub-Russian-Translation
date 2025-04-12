@@ -266,37 +266,29 @@ const DOMObservers = {
 
     // Трансформация строки с автором темы из формата «Автор Открыта 4 hours ago» в «Открыта Автор 4 часа назад»
     transformIssueAuthorStrings: function (translations) {
-        // Селектор для контейнеров автора
-        const authorContainers = document.querySelectorAll('.Box-sc-g0xbh4-0.dqmClk, [data-testid="issue-body-header-author"]');
-
-        authorContainers.forEach(authorEl => {
-            // Ищем ближайший родительский контейнер с информацией об открытии темы
+        document.querySelectorAll('.Box-sc-g0xbh4-0.dqmClk, [data-testid="issue-body-header-author"]').forEach(authorEl => {
             const container = authorEl.closest('.ActivityHeader-module__narrowViewportWrapper--Hjl75, .Box-sc-g0xbh4-0.koxHLL');
             if (!container) return;
 
-            // Находим подвал с текстом «opened» или «Открыта»
             const footer = container.querySelector('.ActivityHeader-module__footer--FVHp7, .Box-sc-g0xbh4-0.bJQcYY');
             if (!footer) return;
 
-            // Находим span с «opened» и автором
             const openedSpan = footer.querySelector('span');
             const authorLink = authorEl.querySelector('a[data-testid="issue-body-header-author"], a[href*="/users/"]') || authorEl;
 
-            // Проверяем span и проверяем, содержит ли он слово «opened»
-            if (!openedSpan) return;
+            // Проверка на текст «opened»
+            if (!openedSpan || !openedSpan.textContent.includes('opened')) return;
 
-            // Находим ссылку на время с relative-time
             const timeLink = footer.querySelector('a[data-testid="issue-body-header-link"]');
             if (!timeLink) return;
 
-            // Находим элемент relative-time внутри ссылки
             const relativeTime = timeLink.querySelector('relative-time');
             if (!relativeTime) return;
 
-            try {
-                // Если уже трансформировано, пропускаем
-                if (footer.getAttribute('data-ru-transformed')) return;
+            // Если уже трансформировано, пропускаем
+            if (footer.getAttribute('data-ru-transformed')) return;
 
+            try {
                 // Отмечаем как трансформированное
                 footer.setAttribute('data-ru-transformed', 'true');
 
@@ -304,7 +296,7 @@ const DOMObservers = {
                 // 1. Сохраняем автора
                 const authorClone = authorLink.cloneNode(true);
 
-                // 2. Меняем текст в span на «Открыта»
+                // 2. Меняем текст в span на перевод «opened» из файла локализации
                 openedSpan.textContent = translations["opened"] ? translations["opened"] + ' ' : 'Открыта ';
 
                 // 3. Вставляем автора после слова «Открыта»
@@ -409,7 +401,7 @@ const DOMObservers = {
                     }
                 }
 
-                // 6. Скрываем оригинальный контейнер с автором, если он отличается от ссылки на автора
+                // 6. Скрываем оригинальный контейнер с автором
                 if (authorEl !== authorLink) {
                     authorEl.style.cssText = 'display: none !important;';
                 }
